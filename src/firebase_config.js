@@ -15,7 +15,7 @@ import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
 
-  //apiKey: "AIzaSyASGd_m88H_qVt3WbZT0pnXYc3911RsCa8",
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
 
   authDomain: "swe4713-accounting-application.firebaseapp.com",
 
@@ -25,7 +25,7 @@ const firebaseConfig = {
 
   messagingSenderId: "49319612085",
 
- // appId: "1:49319612085:web:1d9632e3e0d930859578fc",
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
 
   measurementId: "G-M12DWCCL8T"
 
