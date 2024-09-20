@@ -3,6 +3,9 @@
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+
+    <link rel="stylesheet" href="src/Componets/radio/radio.css">
+
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta
@@ -27,6 +30,26 @@
     <title>React App</title>
   </head>
   <body>
+    <h1>Numbers Game App</h1>
+    <h2>Choose Your Account Type</h2>
+
+    <!-- Radio Buttons -->
+    <label for = "regularRadioID" class = "radio">
+      <input type="radio" name="myRadioField" id="regularRadioID" class="radio__input">
+      <div class="radio__radio"></div>
+      Regular
+    </label>
+    <label for = "managerRadioID" class = "radio"></label>
+      <input type="radio" name="myRadioField" id="managerRadioID" class="radio__input">
+      <div class="radio__radio"></div>
+      Manager
+    </label>
+    <label for = "administratorRadioID" class = "radio"></label>
+      <input type="radio" name="myRadioField" id="administratorRadioID" class="radio__input">
+      <div class="radio__radio"></div>
+      Administrator
+    </label>
+
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <!--
