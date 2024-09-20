@@ -1,6 +1,6 @@
-import {collection, doc, setDoc} from 'firebase/firestore'; 
+import { doc, setDoc} from 'firebase/firestore'; 
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import {db, auth} from './firebase'
+import {db, auth} from './firebase';
 
 const creatNewUser = async (email,password,role) => {
 
