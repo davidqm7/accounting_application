@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { db } from '../firebase'; 
 import { collection, addDoc } from "firebase/firestore"; 
+import { useNavigate } from 'react-router-dom';
 import './RegisterPage.css';
 
 const RegisterPage = () => {
@@ -11,7 +12,9 @@ const RegisterPage = () => {
     dob: '',
     role:'',
   });
+
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -34,6 +37,10 @@ const RegisterPage = () => {
     } catch (err) {
       console.error("Error submitting request: ", err);
     }
+  };
+
+  const goToLogin = () => {
+    navigate('/login'); // Replace '/login' to login page
   };
 
   return (
@@ -82,18 +89,19 @@ const RegisterPage = () => {
         </div>
         <div>
           <label>Role:</label>
-          <input
-            type="text"
-            name="role"
-            value={formData.dob}
-            onChange={handleChange}
-            required
-          />
+          <select name="role" value={formData.role} onChange={handleChange} required>
+            <option value="administrator">Administrator</option>
+            <option value="manager">Manager</option>
+            <option value="user">User</option> 
+          </select>
         </div>
         <button type="submit">Submit</button>
       </form>
 
       {message && <p>{message}</p>}
+
+      <p>Already have an account?</p>
+      <button onClick={goToLogin}>Login</button>
     </div>
   );
 };

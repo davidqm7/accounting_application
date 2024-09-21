@@ -1,20 +1,21 @@
 import React from 'react';
+import { Routes, Route } from 'react-router-dom';
 import NavBar from './Components/NavBar'; 
 import RegisterPage from './Components/RegisterPage';
 
 
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <>
-   <NavBar></NavBar>
-      </>
-      <>
-    <RegisterPage></RegisterPage>
-      </>
+    <div>
+      <NavBar></NavBar>
+      <Routes>
+        <Route path="/register" element={<RegisterPage />} />
+        {/*<Route path="/login" element={<LoginPage />} />*/}
+
+      </Routes>
     </div>
   );
-}
+};
 
 export default App;
