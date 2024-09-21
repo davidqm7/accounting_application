@@ -56,12 +56,12 @@ body{
   }
   
   button:hover {
-    background-color: #45a049;
+    background-color: black;
   }
   
   p {
     text-align: center;
-    color: green;
+    color: black;
     margin-top: 10px;
   }
   
