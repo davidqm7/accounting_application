@@ -22,8 +22,11 @@ David Quintanilla, Jesse Israel, Jose Mendoze, Husain Falih
 ## Technology Stack
 
 Frontend: React.js
+
 Backend: Firebase Functions (Serverless)
+
 Authentication: Firebase Authentication
+
 Database: Firebase Firestore
 
 
