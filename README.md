@@ -33,19 +33,19 @@ Database: Firebase Firestore
 
 ## Features
 
-User Authentication: Login and registration for three user roles (Administrator, Manager, Accountant).
+**User Authentication:** Login and registration for three user roles (Administrator, Manager, Accountant).
 
-Administrator Functions: User creation, role assignment, update user info, and activate/deactivate accounts.
+**Administrator Functions:** User creation, role assignment, update user info, and activate/deactivate accounts.
 
-Chart of Accounts: Create and manage accounts; mark accounts as inactive instead of deleting them.
+**Chart of Accounts:** Create and manage accounts; mark accounts as inactive instead of deleting them.
 
-Journal Entry: Enter transactions with multiple debits and credits, attach supporting documents, and approve/reject transactions.
+**Journal Entry:** Enter transactions with multiple debits and credits, attach supporting documents, and approve/reject transactions.
 
-Financial Reporting: Generate trial balances, income statements, balance sheets, and cash flow statements.
+**Financial Reporting:** Generate trial balances, income statements, balance sheets, and cash flow statements.
 
-Password Management: Secure password reset, expiration alerts, and encryption.
+**Password Management:** Secure password reset, expiration alerts, and encryption.
 
-Role-Based Access Control: Different views and permissions for Administrators, Managers, and Accountants.
+**Role-Based Access Control:** Different views and permissions for Administrators, Managers, and Accountants.
 
 ## Installation and Setup
 Prerequisites
