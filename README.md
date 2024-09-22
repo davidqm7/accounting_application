@@ -9,7 +9,7 @@ A web-based accounting and finance management system built using Firebase and Re
 -  [Project Overview](#project-overview)
 -  [Team Members](#team-members)
 -  [Technology Stack](#technology-stack)
--  [Feature](#features)
+-  [Features](#features)
 -  [Installation and Setup](#installation-and-setup)
 
   
