@@ -33,7 +33,7 @@ Database: Firebase Firestore
 ## Installation and Setup
 Prerequisites
 
-    Node.js (>= 16.x.x)
+    Node.js 
     
     Firebase CLI
     
