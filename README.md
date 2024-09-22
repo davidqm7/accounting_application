@@ -9,6 +9,7 @@ A web-based accounting and finance management system built using Firebase and Re
 -  [Project Overview](#project-overview)
 -  [Team Members](#team-members)
 -  [Technology Stack](#technology-stack)
+-  [Installation and Setup](#installation-and-setup)
 
   
 ## Project Overview
@@ -29,5 +30,13 @@ Authentication: Firebase Authentication
 
 Database: Firebase Firestore
 
+## Installation and Setup
+Prerequisites
+
+    Node.js (>= 16.x.x)
+    
+    Firebase CLI
+    
+    A Firebase project with Firestore, Authentication, and Cloud Functions enabled
 
 
