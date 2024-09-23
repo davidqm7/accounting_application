@@ -88,7 +88,7 @@ const RegisterPage = () => {
   };
 
   const goToLogin = () => {
-    navigate('/login');
+    navigate('/');
   };
 
   return (
