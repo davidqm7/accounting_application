@@ -22,9 +22,9 @@ const App = () => {
         
         { /* <Route path="/" element={<AdminDashboard />} />*/}
 
-       {/* <Route path="/" element={<LoginPage />} />  */}
-       {/* <Route path="/forgot-password" element={<ForgotPassword/>} />
-        <Route path="/register" element={<RegisterPage />} /> */}
+        <Route path="/" element={<LoginPage />} /> 
+       <Route path="/forgot-password" element={<ForgotPassword/>} />
+        <Route path="/register" element={<RegisterPage />} /> 
         
 
         { /* <Route path="/email" element={<SendEmail />} />*/}
@@ -33,7 +33,7 @@ const App = () => {
         { /* <Route path="/report" element={<UserReport />} />*/}
         { /* <Route path="/update" element={<UpdateInformation />} />*/}
         {/* <Route path="/" element={<RegularDashboard />} />*/}
-        <Route path="/" element={<ManagerDashboard />} />
+        {/* <Route path="/" element={<ManagerDashboard />} />*/}
 
       </Routes>
     </div>
