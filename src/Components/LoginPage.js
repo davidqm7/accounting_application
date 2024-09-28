@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../firebase'; 
-import { doc, getDoc } from "firebase/firestore"; 
+import { collection, query, where, getDocs } from "firebase/firestore"; 
 import { db } from '../firebase'; 
 import './LoginPage.css';
 
 const LoginPage = () => {
     const [formData, setFormData] = useState({
-      username: '',
+      username: '',  // We'll keep using the username field for user input
       password: '',
     });
 
@@ -24,27 +24,36 @@ const LoginPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         try {
-            const userCredential = await signInWithEmailAndPassword(auth, formData.username, formData.password);
+            // Step 1: Query Firestore to find the user by username
+            const q = query(collection(db, "userRequests"), where("username", "==", formData.username));
+            const querySnapshot = await getDocs(q);
+            
+            if (querySnapshot.empty) {
+                setErrorMessage('Username does not exist.');
+                return;
+            }
+
+            // Step 2: Get the user document from Firestore
+            const userDoc = querySnapshot.docs[0];  // Assume username is unique, so we take the first result
+            const userData = userDoc.data();
+            const email = userData.email;  // Extract the email from the user data
+
+            // Step 3: Use the retrieved email for authentication
+            const userCredential = await signInWithEmailAndPassword(auth, email, formData.password);
             const user = userCredential.user;
 
-           
-            const userDoc = await getDoc(doc(db, "users", user.uid)); 
-            if (userDoc.exists()) {
-                const userData = userDoc.data();
-                const userRole = userData.role; 
+            const username = userData.username;
+            const userRole = userData.role;
 
-                // Navigate based on the role
-                if (userRole === 'administrator') {
-                    navigate('/admindashboard'); 
-                } else if(userRole === "manager"){
-                  navigate('/manager'); 
-                }
-                else {
-                    navigate('/user-dashboard'); 
-                }
+            // Step 4: Navigate based on role and pass the username
+            if (userRole === 'administrator') {
+                navigate('/admin', { state: { username } });
+            } else if (userRole === 'manager') {
+                navigate('/manager', { state: { username } });
             } else {
-                setErrorMessage("User does not exist in the database.");
+                navigate('/user-dashboard', { state: { username } });
             }
         } catch (err) {
             setErrorMessage('Invalid username or password. Please try again.');
@@ -56,7 +65,7 @@ const LoginPage = () => {
     };
 
     const handleForgotPassword = () => {
-        navigate('/forgot-password'); 
+        navigate('/forgot-password');
     };
 
     return (

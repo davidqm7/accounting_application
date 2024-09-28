@@ -9,7 +9,7 @@ import {getAuth} from 'firebase/auth';
 
 const firebaseConfig = {
 
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  apiKey: "AIzaSyASGd_m88H_qVt3WbZT0pnXYc3911RsCa8", //process.env.REACT_APP_FIREBASE_API_KEY
 
   authDomain: "swe4713-accounting-application.firebaseapp.com",
 
@@ -19,7 +19,7 @@ const firebaseConfig = {
 
   messagingSenderId: "49319612085",
 
-  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID, //process.env.REACT_APP_FIREBASE_APP_ID
 
   measurementId: "G-M12DWCCL8T"
 

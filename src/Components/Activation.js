@@ -1,27 +1,64 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
 import { db } from '../firebase';
-import './Activation.css'; // Make sure to import the CSS file
+import './Activation.css'; 
 
 const Activation = () => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
+    
     const fetchUsers = async () => {
-      const usersSnapshot = await getDocs(collection(db, 'users'));
+      const usersSnapshot = await getDocs(collection(db, 'userRequests'));
       const usersList = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setUsers(usersList);
     };
     fetchUsers();
   }, []);
 
+  
+  const generateUsername = (firstName, lastName, createdAt) => {
+    const firstInitial = firstName.charAt(0).toLowerCase();
+    const lastNameLower = lastName.toLowerCase();
+    
+    
+    const creationDate = new Date(createdAt.seconds * 1000); 
+    const month = ("0" + (creationDate.getMonth() + 1)).slice(-2); 
+    const year = creationDate.getFullYear().toString().slice(-2); 
+
+    return `${firstInitial}${lastNameLower}${month}${year}`;
+  };
+
+ 
   const toggleStatus = async (user) => {
     const newStatus = user.status === 'Active' ? 'Inactive' : 'Active';
-    try {
-      await updateDoc(doc(db, 'users', user.id), { status: newStatus });
-      setUsers(users.map(u => u.id === user.id ? { ...u, status: newStatus } : u));
-    } catch (error) {
-      console.error("Error updating user status:", error);
+
+
+    if (newStatus === 'Active' && !user.username) {
+      const generatedUsername = generateUsername(user.firstName, user.lastName, user.createdAt);
+
+      try {
+       
+        await updateDoc(doc(db, 'userRequests', user.id), { 
+          status: newStatus, 
+          username: generatedUsername 
+        });
+
+      
+        setUsers(users.map(u => 
+          u.id === user.id ? { ...u, status: newStatus, username: generatedUsername } : u
+        ));
+      } catch (error) {
+        console.error("Error updating user status and username:", error);
+      }
+    } else {
+      
+      try {
+        await updateDoc(doc(db, 'userRequests', user.id), { status: newStatus });
+        setUsers(users.map(u => u.id === user.id ? { ...u, status: newStatus } : u));
+      } catch (error) {
+        console.error("Error updating user status:", error);
+      }
     }
   };
 
@@ -41,10 +78,10 @@ const Activation = () => {
         <tbody>
           {users.map(user => (
             <tr key={user.id}>
-              <td>{user.username}</td>
+              <td>{user.username || 'N/A'}</td> 
               <td>{user.email}</td>
               <td>{user.role}</td>
-              <td className="status">{user.status}</td>
+              <td className={`status ${user.status.toLowerCase()}`}>{user.status}</td>
               <td>
                 <button 
                   className={`toggle-button ${user.status === 'Active' ? 'deactivate' : 'activate'}`}

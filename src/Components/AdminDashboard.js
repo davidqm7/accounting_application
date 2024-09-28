@@ -1,29 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { db } from '../firebase';
+import { db, auth } from '../firebase'; 
 import { collection, getDocs } from "firebase/firestore";
+import { signOut } from 'firebase/auth'; 
+import { useNavigate, useLocation, Link } from 'react-router-dom'; 
 import './AdminDashboard.css';
-import { Link } from 'react-router-dom'; // Import Link for routing
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();  
+  const location = useLocation();  
+  const username = location.state?.username || 'Admin'; 
+
   const [totalUsers, setTotalUsers] = useState(0);
   const [recentActivity, setRecentActivity] = useState([]);
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    // Fetch total users from Firestore
     const fetchTotalUsers = async () => {
       try {
-        const usersSnapshot = await getDocs(collection(db, 'users')); // Assumes a 'users' collection
+        const usersSnapshot = await getDocs(collection(db, 'userRequests')); 
         setTotalUsers(usersSnapshot.size);
       } catch (error) {
         console.error("Error fetching total users:", error);
       }
     };
 
-    // Fetch recent activity from Firestore (placeholder for actual data)
     const fetchRecentActivity = async () => {
       try {
-        const activitySnapshot = await getDocs(collection(db, 'userActivity')); // Assumes a 'userActivity' collection
+        const activitySnapshot = await getDocs(collection(db, 'userActivity')); 
         const activityList = activitySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setRecentActivity(activityList);
       } catch (error) {
@@ -31,10 +34,9 @@ const AdminDashboard = () => {
       }
     };
 
-    // Fetch system notifications from Firestore (placeholder for actual data)
     const fetchNotifications = async () => {
       try {
-        const notificationsSnapshot = await getDocs(collection(db, 'notifications')); // Assumes a 'notifications' collection
+        const notificationsSnapshot = await getDocs(collection(db, 'notifications')); 
         const notificationsList = notificationsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setNotifications(notificationsList);
       } catch (error) {
@@ -47,13 +49,26 @@ const AdminDashboard = () => {
     fetchNotifications();
   }, []);
 
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth); 
+      navigate('/'); 
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
+
   return (
     <div>
       <div className="navbar">
         <h1>Admin Dashboard</h1>
-        <Link to="/report">User Report</Link>
-        <Link to="/update">Update Information</Link>
-        <Link to="/logout">Logout</Link>
+        <div className="navbar-right">
+          <span className="username-display">Logged in as: {username}</span> 
+          <Link to="/report">User Report</Link>
+          <Link to="/update">Update Information</Link>
+          <button className="logout-button" onClick={handleLogout}>Logout</button> 
+        </div>
       </div>
 
       <div className="container">

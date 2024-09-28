@@ -20,20 +20,23 @@ const App = () => {
       <NavBar></NavBar>
       <Routes>
         
-        { /* <Route path="/" element={<AdminDashboard />} />*/}
 
-       {/* <Route path="/" element={<LoginPage />} />  */}
-       {/* <Route path="/forgot-password" element={<ForgotPassword/>} />
-        <Route path="/register" element={<RegisterPage />} /> */}
+     <Route path="/" element={<LoginPage />} />  
+     <Route path="/forgot-password" element={<ForgotPassword/>}/>
+     <Route path="/register" element={<RegisterPage />} />   
         
+     <Route path="/admin" element={<AdminDashboard />} />
+     <Route path="/email" element={<SendEmail />} />
+      <Route path="/create-user" element={<CreateUser />} />
+      <Route path="/activation" element={<Activation />} />
+       <Route path="/report" element={<UserReport />} />
+       <Route path="/update" element={<UpdateInformation />} />
+       <Route path="/" element={<RegularDashboard />} />
 
-        { /* <Route path="/email" element={<SendEmail />} />*/}
-        { /* <Route path="/create-user" element={<CreateUser />} />*/}
-        { /* <Route path="/activation" element={<Activation />} />*/}
-        { /* <Route path="/report" element={<UserReport />} />*/}
-        { /* <Route path="/update" element={<UpdateInformation />} />*/}
-        {/* <Route path="/" element={<RegularDashboard />} />*/}
-        <Route path="/" element={<ManagerDashboard />} />
+      <Route path="/manager" element={<ManagerDashboard />} />
+
+       <Route path="/user-dashboard" element={<RegularDashboard />} />
+
 
       </Routes>
     </div>

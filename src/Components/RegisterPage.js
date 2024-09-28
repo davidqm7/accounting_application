@@ -78,6 +78,7 @@ const RegisterPage = () => {
         role: formData.role,
         status: "pending",
         createdAt: new Date(),
+        password: formData.password,
       });
 
       setMessage("Request submitted successfully! Waiting for admin approval.");
