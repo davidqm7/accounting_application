@@ -15,6 +15,7 @@ const RegisterPage = () => {
     dob: '',
     address: '',
     role: '',
+    userName: '',
   });
 
   const [message, setMessage] = useState('');
@@ -68,6 +69,19 @@ const RegisterPage = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
       const user = userCredential.user;
 
+
+      // Extract first letter of firstName
+      const firstLetter = formData.firstName.charAt(0).toLowerCase();
+      // Get full lastName
+      const lastName = formData.lastName.toLowerCase();
+      // Extract month and last 2 digits of year from dob
+      const dob = new Date(formData.dob);
+      const month = (dob.getMonth() + 1).toString().padStart(2, '0');  // Get month as two digits
+      const year = dob.getFullYear().toString().slice(-2);  // Get last two digits of the year
+
+      // Generate userName
+      const createdUserName = `${firstLetter}${lastName}${month}${year}`;
+
       await addDoc(collection(db, "userRequests"), {
         uid: user.uid,
         firstName: formData.firstName,
@@ -76,6 +90,7 @@ const RegisterPage = () => {
         dob: formData.dob,
         address: formData.address,
         role: formData.role,
+        userName: createdUserName,
         status: "pending",
         createdAt: new Date(),
         password: formData.password,
