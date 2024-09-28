@@ -70,17 +70,6 @@ const RegisterPage = () => {
       const user = userCredential.user;
 
 
-      // Extract first letter of firstName
-      const firstLetter = formData.firstName.charAt(0).toLowerCase();
-      // Get full lastName
-      const lastName = formData.lastName.toLowerCase();
-      // Extract month and last 2 digits of year from dob
-      const dob = new Date(formData.dob);
-      const month = (dob.getMonth() + 1).toString().padStart(2, '0');  // Get month as two digits
-      const year = dob.getFullYear().toString().slice(-2);  // Get last two digits of the year
-
-      // Generate userName
-      const createdUserName = `${firstLetter}${lastName}${month}${year}`;
 
       await addDoc(collection(db, "userRequests"), {
         uid: user.uid,
@@ -90,7 +79,6 @@ const RegisterPage = () => {
         dob: formData.dob,
         address: formData.address,
         role: formData.role,
-        userName: createdUserName,
         status: "pending",
         createdAt: new Date(),
         password: formData.password,
@@ -175,6 +163,7 @@ const RegisterPage = () => {
         <div>
           <label>Role:</label>
           <select name="role" value={formData.role} onChange={handleChange} required>
+          <option value="">Pick One</option>
             <option value="administrator">Administrator</option>
             <option value="manager">Manager</option>
             <option value="user">User</option>

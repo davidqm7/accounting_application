@@ -12,6 +12,7 @@ import CreateUser from './Components/CreateUser';
 import Activation from './Components/Activation';
 import RegularDashboard from './Components/RegularDashboard'; 
 import ManagerDashboard from './Components/ManagerDashboard'; 
+import ResetPassword from './Components/ResetPassword';
 
 
 const App = () => {
@@ -23,6 +24,7 @@ const App = () => {
 
      <Route path="/" element={<LoginPage />} />  
      <Route path="/forgot-password" element={<ForgotPassword/>}/>
+     <Route path="/reset-password" element={<ResetPassword />} />
      <Route path="/register" element={<RegisterPage />} />   
         
      <Route path="/admin" element={<AdminDashboard />} />
