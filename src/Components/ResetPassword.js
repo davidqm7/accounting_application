@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { confirmPasswordReset } from 'firebase/auth'; 
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { auth } from '../firebase';
+import { auth } from '../firebase'; 
 import './ResetPassword.css';
 
 const ResetPassword = () => {
@@ -21,6 +21,7 @@ const ResetPassword = () => {
     setNewPassword(e.target.value);
   };
 
+
   const validatePassword = (password) => {
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     const startsWithLetter = /^[A-Za-z]/;
@@ -29,6 +30,7 @@ const ResetPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const oobCode = searchParams.get('oobCode'); 
 
     if (!oobCode) {
@@ -42,10 +44,13 @@ const ResetPassword = () => {
     }
 
     try {
+      
       await confirmPasswordReset(auth, oobCode, newPassword);
+
       setMessage('Password has been successfully reset. You can now log in with your new password.');
       navigate('/'); 
     } catch (err) {
+      console.error('Error details:', err);
       setError('Error resetting password: ' + err.message);
     }
   };

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { sendPasswordResetEmail } from 'firebase/auth'; 
 import { auth, db } from '../firebase'; 
 import { useNavigate } from 'react-router-dom';
-import { doc, getDoc } from 'firebase/firestore';
+import { query, collection, where, getDocs } from 'firebase/firestore'; // Import Firestore query methods
 import './ForgotPassword.css';
 
 const ForgotPassword = () => {
@@ -20,16 +20,23 @@ const ForgotPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage(''); 
-    setError(''); 
+    setError('');
 
     try {
-  
-      const userDoc = await getDoc(doc(db, 'userRequests', username));
       
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        if (userData.email === email && userData.dob === dob) {
+      const userQuery = query(collection(db, 'userRequests'), where('username', '==', username));
+
+      const querySnapshot = await getDocs(userQuery);
+      
+      if (!querySnapshot.empty) {
         
+        const userDoc = querySnapshot.docs[0];
+        const userData = userDoc.data();
+
+        console.log('User Data:', userData);
+        
+      
+        if (userData.email === email && userData.dob === dob) {
           await sendPasswordResetEmail(auth, email);
           setMessage('Password reset email sent! Please check your inbox.');
         } else {
