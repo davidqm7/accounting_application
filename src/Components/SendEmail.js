@@ -3,6 +3,8 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from '../firebase';  // Adjust the import path as necessary
 import './SendEmail.css'; // Make sure to import the CSS file
 
+
+
 const SendEmail = () => {
   const [users, setUsers] = useState([]);
   const [selectedUserEmail, setSelectedUserEmail] = useState('');
@@ -13,7 +15,7 @@ const SendEmail = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const usersSnapshot = await getDocs(collection(db, 'users')); // Assuming 'users' collection
+        const usersSnapshot = await getDocs(collection(db, 'userRequests')); // Assuming 'users' collection
         const usersList = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setUsers(usersList);
       } catch (error) {
@@ -27,6 +29,7 @@ const SendEmail = () => {
     e.preventDefault();
     alert(`Email sent to ${selectedUserEmail}! Subject: ${emailSubject}, Message: ${emailMessage}`);
     // Here, you would implement the actual email sending functionality using your server or a service like SendGrid.
+
   };
 
   return (

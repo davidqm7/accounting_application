@@ -22,7 +22,7 @@ const App = () => {
       <Routes>
         
 
-     <Route path="/" element={<LoginPage />} />  
+     <Route path="/" element={<LoginPage />} /> 
      <Route path="/forgot-password" element={<ForgotPassword/>}/>
      <Route path="/reset-password" element={<ResetPassword />} />
      <Route path="/register" element={<RegisterPage />} />   
@@ -37,7 +37,7 @@ const App = () => {
 
       <Route path="/manager" element={<ManagerDashboard />} />
 
-       <Route path="/user-dashboard" element={<RegularDashboard />} />
+       <Route path="/user-dashboard" element={<RegularDashboard />} /> 
 
 
       </Routes>
