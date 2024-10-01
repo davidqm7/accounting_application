@@ -31,7 +31,7 @@ const RegularDashboard = () => {
       <div className="container">
         <div className="sidebar">
           <h2>Navigation</h2>
-          <Link to="">...</Link>
+          <Link to="/reg-get-email">Read Messages</Link>
           <Link to="">...</Link>
           <Link to="">...</Link>
         </div>
