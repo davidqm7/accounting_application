@@ -32,6 +32,7 @@ const ManagerDashboard = () => {
         <div className="sidebar">
           <h2>Navigation</h2>
           <Link to="/manager-get-email">Read Messages</Link>
+          <Link to="/manager-user-report">User Report</Link>  
           <Link to="">...</Link>
           <Link to="">...</Link>
         </div>

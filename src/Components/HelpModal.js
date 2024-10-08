@@ -17,7 +17,7 @@ const HelpModal = ({ show, handleClose }) => {
             <ul>
               <li><strong>Administrator</strong>: Manages users, assigns roles, adds accounts, and oversees system operations.</li>
               <li><strong>Manager</strong>: Views and reviews transactions, but cannot modify accounts.</li>
-              <li><strong>Accountant</strong>: Records transactions and generates reports, but cannot add or edit accounts.</li>
+              <li><strong>Regular User</strong>: Records transactions and generates reports, but cannot add or edit accounts.</li>
             </ul>
           </p>
         </div>
