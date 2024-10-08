@@ -35,13 +35,13 @@ const App = () => {
       <Route path="/activation" element={<Activation />} />
        <Route path="/report" element={<UserReport />} />
        <Route path="/update" element={<UpdateInformation />} />
-       <Route path="/" element={<RegularDashboard />} />
-       <Route path="/reg-get-email" element={<RegularGetEmail />} />
+       
 
       <Route path="/manager" element={<ManagerDashboard />} />
       <Route path="/manager-get-email" element={<ManagerGetEmail />} />
 
        <Route path="/user-dashboard" element={<RegularDashboard />} />
+       <Route path="/reg-get-email" element={<RegularGetEmail />} />
 
 
       </Routes>
