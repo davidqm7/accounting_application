@@ -19,13 +19,13 @@ This project is designed as part of the SWE4713 course. It is a web application 
 
 ## Team Members
 
-David Quintanilla, Jesse Israel, Jose Mendoza, Husain Falih
+David Quintanilla, Jesse Israel, Husain Falih
 
 ## Technology Stack
 
 Frontend: React.js
 
-Backend: Firebase Functions (Serverless)
+Backend: Firebase Functions (Serverless), Node.js
 
 Authentication: Firebase Authentication
 
