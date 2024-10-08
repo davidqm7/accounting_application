@@ -25,7 +25,7 @@ David Quintanilla, Jesse Israel, Jose Mendoza, Husain Falih
 
 Frontend: React.js
 
-Backend: Firebase Functions (Serverless)
+Backend: Firebase Functions (Serverless), Node.js
 
 Authentication: Firebase Authentication
 
