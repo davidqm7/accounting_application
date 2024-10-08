@@ -84,6 +84,24 @@ const RegisterPage = () => {
         password: formData.password,
       });
 
+      //Creates User Account
+      await addDoc(collection(db, "userAccounts"), {
+        uid: user.uid,
+        createdAt: new Date(),
+        balance: "0.00",
+        catagory: "pending",
+        comment: "pending",
+        credit: "0.00",
+        debit: "0.00",
+        initialBalance: "0.00",
+        name: formData.firstName + " " + formData.lastName,
+        normalSide: "pending",
+        number: "pending",
+        order: "pending",
+        statement: "pending",
+        subcatagory: "pending",
+      });
+
       setMessage("Request submitted successfully! Waiting for admin approval.");
     } catch (err) {
       console.error("Error submitting request: ", err);

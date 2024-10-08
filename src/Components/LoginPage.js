@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../firebase'; 
-import { collection, query, where, getDocs } from "firebase/firestore"; 
+import { collection, query, where, getDocs, addDoc } from "firebase/firestore"; 
 import { db } from '../firebase'; 
 import './LoginPage.css';
 
 const LoginPage = () => {
+  
     const [formData, setFormData] = useState({
       username: '',  
       password: '',

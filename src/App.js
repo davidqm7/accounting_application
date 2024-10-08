@@ -18,6 +18,7 @@ import ManagerGetEmail from './Components/ManagerGetEmail';
 
 
 const App = () => {
+
   return (
     <div>
       <NavBar></NavBar>
