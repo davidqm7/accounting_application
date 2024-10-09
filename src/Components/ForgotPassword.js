@@ -89,13 +89,13 @@ const ForgotPassword = () => {
             required
           />
         </div>
-        <button type="submit">Send Reset Link</button>
+        <button type="submit" title = "Sends the reset link">Send Reset Link</button>
       </form>
 
       {message && <p className="success-message">{message}</p>}
       {error && <p className="error-message">{error}</p>}
 
-      <button onClick={handleBackToLogin} className="back-button">Back to Login</button>
+      <button title = "Goes back to login" onClick={handleBackToLogin} className="back-button">Back to Login</button>
     </div>
   );
 };

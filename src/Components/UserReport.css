@@ -52,12 +52,56 @@
     flex: 1;
 }
 
+.user-actions {
+    display: flex;
+    align-items: center;
+}
+
+.user-actions button {
+    margin-right: 10px; 
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: grey;
+    color:black;
+    cursor: pointer;
+}
+
+.user-actions button:hover {
+    background-color: white; 
+}
+
+.user-actions button::after {
+    content: attr(title); 
+    position: absolute;
+    bottom: 125%; 
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease-in-out;
+    font-size: 12px;
+    z-index: 1;
+}
+
+.user-actions button:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+
 .user-actions i {
     margin-left: 10px;
     cursor: pointer;
-    color: #007bff;
+    color: white;
 }
 
 .user-actions i:hover {
-    color: #0056b3;
+    color: white;
 }
+

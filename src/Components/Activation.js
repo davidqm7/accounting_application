@@ -97,6 +97,7 @@ const Activation = () => {
               <td className={`status ${user.status.toLowerCase()}`}>{user.status}</td>
               <td>
                 <button 
+                title = "Button to Activate or Deactivate an account"
                   className={`toggle-button ${user.status === 'Active' ? 'deactivate' : 'activate'}`}
                   onClick={() => toggleStatus(user)}
                 >

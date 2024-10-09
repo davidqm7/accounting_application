@@ -77,7 +77,7 @@ const SendEmail = () => {
             ></textarea>
           </div>
 
-          <button type="submit">Send Email</button>
+          <button type="submit" title = "Sends the email" >Send Email</button>
         </form>
       </div>
     </div>

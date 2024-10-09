@@ -94,13 +94,15 @@ const LoginPage = () => {
                     />
                 </div>
                 {errorMessage && <p className="error-message">{errorMessage}</p>}
-                <button type="submit">Login</button>
+                <button type="submit" title = "Logs the user if the information is correct" >Login</button>
             </form>
 
             <div className="additional-links">
-                <button onClick={handleForgotPassword}>Forgot Password?</button>
+                <button title = "Takes you to forgot password page" onClick={handleForgotPassword}>Forgot Password?</button>
                 <p>Don't have an account?</p>
-                <button onClick={goToRegister}>Register</button>
+                <button 
+                title = "Takes you to the register page"
+                onClick={goToRegister}>Register</button>
             </div>
         </div>
     );

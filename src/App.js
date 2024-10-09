@@ -15,6 +15,8 @@ import ManagerDashboard from './Components/ManagerDashboard';
 import ResetPassword from './Components/ResetPassword';
 import RegularGetEmail from './Components/RegularGetEmail';
 import ManagerGetEmail from './Components/ManagerGetEmail';
+import ManagerUserReport from './Components/ManagerUserReport';
+import RegularUserReport from './Components/RegularUserReport';
 
 
 const App = () => {
@@ -40,9 +42,12 @@ const App = () => {
 
       <Route path="/manager" element={<ManagerDashboard />} />
       <Route path="/manager-get-email" element={<ManagerGetEmail />} />
+      <Route path="/manager-user-report" element={<ManagerUserReport />} />
+      
 
        <Route path="/user-dashboard" element={<RegularDashboard />} />
        <Route path="/reg-get-email" element={<RegularGetEmail />} />
+       <Route path="/regular-user-report" element={<RegularUserReport />} />
 
 
       </Routes>
