@@ -88,8 +88,12 @@ const UserReport = () => {
                                 <strong>Status:</strong> {user.status ? 'Active' : 'Inactive'}
                             </div>
                             <div className="user-actions">
-                                <button onClick={() => goToDetails(user.id)} className="details-btn">Details</button>
-                                <button onClick={() => goToEdit(user.id)} className="edit-btn">Edit</button>
+                                <button 
+                                title = "View detailed information about this user" 
+                                onClick={() => goToDetails(user.id)} className="details-btn">Details</button>
+                                <button 
+                                title = "Edit user information" 
+                                onClick={() => goToEdit(user.id)} className="edit-btn">Edit</button>
                                 <i className={user.status ? "fas fa-user-lock" : "fas fa-user-check"} 
                                     title={user.status ? "Deactivate User" : "Activate User"} 
                                     onClick={() => toggleUserStatus(user.id, user.status)}></i>

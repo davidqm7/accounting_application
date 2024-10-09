@@ -71,6 +71,30 @@
     background-color: white; 
 }
 
+.user-actions button::after {
+    content: attr(title); 
+    position: absolute;
+    bottom: 125%; 
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease-in-out;
+    font-size: 12px;
+    z-index: 1;
+}
+
+.user-actions button:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+
 .user-actions i {
     margin-left: 10px;
     cursor: pointer;

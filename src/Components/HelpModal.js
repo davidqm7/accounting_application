@@ -11,6 +11,7 @@ const HelpModal = ({ show, handleClose }) => {
       <div className="modal-content">
         <h2>Help Topics</h2>
         <div className="help-section">
+          <h3>Hover over buttons to see their purpose</h3>
           <h3>User Roles and Permissions</h3>
           <p>
             The application supports three types of users:
