@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, updateDoc, doc } from "firebase/firestore"; 
 import { db } from '../firebase'; 
 import './UserReport.css'; 
 
 const UserReport = () => {
     const [users, setUsers] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -18,7 +20,7 @@ const UserReport = () => {
                 const usersList = userRequestsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 const accountsList = userAccountsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-                
+                // Merge users with accounts data (if needed)
                 const mergedUsers = usersList.map(user => ({
                     ...user,
                     accountDetails: accountsList.find(account => account.uid === user.uid)
@@ -42,6 +44,14 @@ const UserReport = () => {
         } catch (error) {
             console.error("Error updating user status:", error);
         }
+    };
+
+    const goToDetails = (userId) => {
+        navigate(`/details`, { state: { userId } });
+    };
+
+    const goToEdit = (userId) => {
+        navigate(`/edit`, { state: { userId } });
     };
 
     return (
@@ -78,7 +88,8 @@ const UserReport = () => {
                                 <strong>Status:</strong> {user.status ? 'Active' : 'Inactive'}
                             </div>
                             <div className="user-actions">
-                                <i className="fas fa-edit" title="Edit User"></i>
+                                <button onClick={() => goToDetails(user.id)} className="details-btn">Details</button>
+                                <button onClick={() => goToEdit(user.id)} className="edit-btn">Edit</button>
                                 <i className={user.status ? "fas fa-user-lock" : "fas fa-user-check"} 
                                     title={user.status ? "Deactivate User" : "Activate User"} 
                                     onClick={() => toggleUserStatus(user.id, user.status)}></i>
