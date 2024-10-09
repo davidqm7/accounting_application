@@ -72,7 +72,7 @@ const CreateUser = () => {
             </select>
           </div>
 
-          <button type="submit">Create User</button>
+          <button title = "Creates a new user" type="submit">Create User</button>
         </form>
       </div>
     </div>

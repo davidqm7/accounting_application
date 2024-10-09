@@ -169,13 +169,13 @@ const RegisterPage = () => {
             <option value="user">User</option>
           </select>
         </div>
-        <button type="submit">Submit</button>
+        <button type="submit" title="Takes in your information to be approved">Submit</button>
       </form>
 
       {message && <p>{message}</p>}
 
       <p>Already have an account?</p>
-      <button onClick={goToLogin}>Login</button>
+      <button title = "Takes you back to login page" onClick={goToLogin}>Login</button>
     </div>
   );
 };

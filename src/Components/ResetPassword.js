@@ -73,7 +73,7 @@ const ResetPassword = () => {
               required
             />
           </div>
-          <button type="submit">Reset Password</button>
+          <button type="submit" title = "Confirms your inputs and sends you a email to reset your password" >Reset Password</button>
         </form>
       )}
     </div>

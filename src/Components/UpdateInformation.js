@@ -83,7 +83,7 @@ const UpdateInformation = () => {
                     </select>
                 </div>
 
-                <button type="submit">Update User Information</button>
+                <button type="submit" title= "Send the information to be updated in the database" >Update User Information</button>
             </form>
 
             <div className="info" id="info">

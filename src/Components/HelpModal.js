@@ -67,7 +67,7 @@ const HelpModal = ({ show, handleClose }) => {
             </ul>
           </p>
         </div>
-        <button onClick={handleClose}>Close</button>
+        <button title = "Closes the help popup" onClick={handleClose}>Close</button>
       </div>
     </div>
   );
