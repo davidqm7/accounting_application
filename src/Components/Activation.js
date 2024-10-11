@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
+import { collection, getDocs, updateDoc, doc, getDoc } from "firebase/firestore";
 import { db } from '../firebase';
 import './Activation.css'; 
 
 const Activation = () => {
   const [users, setUsers] = useState([]);
+  const [errorMessage, setErrorMessage] = useState(''); 
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -47,8 +48,30 @@ const Activation = () => {
     }
   };
 
+  const checkUserBalance = async (userId) => {
+    try {
+      const accountDoc = await getDoc(doc(db, 'userAccounts', userId));
+      if (accountDoc.exists()) {
+        const userAccount = accountDoc.data();
+        return userAccount.balance || 0; 
+      }
+    } catch (error) {
+      console.error("Error fetching user balance:", error);
+    }
+    return 0;
+  };
+
   const toggleStatus = async (user) => {
     const newStatus = user.status === 'Active' ? 'Inactive' : 'Active';
+    setErrorMessage(''); 
+
+    if (newStatus === 'Inactive') {
+      const userBalance = await checkUserBalance(user.id);
+      if (userBalance > 0) {
+        setErrorMessage(`User cannot be deactivated because they have a balance of $${userBalance}.`);
+        return;
+      }
+    }
 
     if (newStatus === 'Active' && !user.username) {
       const generatedUsername = generateUsername(user.firstName, user.lastName, user.createdAt);
@@ -78,6 +101,13 @@ const Activation = () => {
   return (
     <div className="activation-container">
       <h1>Admin User Management</h1>
+
+      {errorMessage && (
+        <div className="error-message">
+          {errorMessage}
+        </div>
+      )}
+
       <table>
         <thead>
           <tr>
