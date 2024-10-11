@@ -1,13 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { signOut } from 'firebase/auth'; 
 import { useNavigate, useLocation, Link } from 'react-router-dom'; 
-import { auth } from '../firebase'; 
+import { auth, db } from '../firebase'; 
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import './ManagerDashboard.css';
 
 const ManagerDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const username = location.state?.username || 'Manager';  
+
+  const [userInfo, setUserInfo] = useState({ firstName: '', lastName: '' });
+
+  // Fetch first and last name from Firestore (userRequests collection)
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const userSnapshot = await getDocs(
+          query(collection(db, 'userRequests'), where('username', '==', username))
+        );
+        if (!userSnapshot.empty) {
+          const userData = userSnapshot.docs[0].data(); 
+          setUserInfo({
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching user information:", error);
+      }
+    };
+
+    fetchUserInfo();
+  }, [username]);
 
   const handleLogout = async () => {
     try {
@@ -21,6 +46,9 @@ const ManagerDashboard = () => {
   return (
     <div>
       <div className="navbar">
+        <div className="navbar-left">
+          <span className="user-info-display">Name: {userInfo.firstName} {userInfo.lastName}</span>
+        </div>
         <h1>Manager Dashboard</h1>
         <div className="navbar-right">
           <span className="username-display">Logged in as: {username}</span>

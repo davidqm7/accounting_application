@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { db, auth } from '../firebase'; 
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { signOut } from 'firebase/auth'; 
 import { useNavigate, useLocation, Link } from 'react-router-dom'; 
 import './AdminDashboard.css';
@@ -13,6 +13,7 @@ const AdminDashboard = () => {
   const [totalUsers, setTotalUsers] = useState(0);
   const [recentActivity, setRecentActivity] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  const [userInfo, setUserInfo] = useState({ firstName: '', lastName: '' });
 
   useEffect(() => {
     const fetchTotalUsers = async () => {
@@ -44,11 +45,30 @@ const AdminDashboard = () => {
       }
     };
 
+    const fetchUserInfo = async () => {
+      try {
+        const user = auth.currentUser;
+        if (user) {
+          const q = query(collection(db, 'userRequests'), where('uid', '==', user.uid));
+          const userSnapshot = await getDocs(q);
+          if (!userSnapshot.empty) {
+            const userData = userSnapshot.docs[0].data();
+            setUserInfo({
+              firstName: userData.firstName,
+              lastName: userData.lastName,
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user info:", error);
+      }
+    };
+
     fetchTotalUsers();
     fetchRecentActivity();
     fetchNotifications();
+    fetchUserInfo();
   }, []);
-
 
   const handleLogout = async () => {
     try {
@@ -63,6 +83,9 @@ const AdminDashboard = () => {
     <div>
       <div className="navbar">
         <h1>Admin Dashboard</h1>
+        <div className="navbar-left">
+          <span className="user-info-display">Name: {userInfo.firstName} {userInfo.lastName}</span> 
+        </div>
         <div className="navbar-right">
           <span className="username-display">Logged in as: {username}</span> 
           <Link to="/report">User Report</Link>
