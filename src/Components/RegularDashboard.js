@@ -1,13 +1,35 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { signOut } from 'firebase/auth'; 
 import { useNavigate, useLocation, Link } from 'react-router-dom'; 
-import { auth } from '../firebase'; 
+import { auth, db } from '../firebase'; 
+import { collection, getDocs, query, where } from "firebase/firestore";
 import './RegularDashboard.css';
 
 const RegularDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const username = location.state?.username || 'User';  
+
+  const [userInfo, setUserInfo] = useState({ firstName: '', lastName: '' });
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const userRef = collection(db, 'userRequests');
+        const q = query(userRef, where('username', '==', username));
+        const userSnapshot = await getDocs(q);
+
+        if (!userSnapshot.empty) {
+          const userData = userSnapshot.docs[0].data();
+          setUserInfo({ firstName: userData.firstName, lastName: userData.lastName });
+        }
+      } catch (error) {
+        console.error("Error fetching user info:", error);
+      }
+    };
+
+    fetchUserInfo();
+  }, [username]);
 
   const handleLogout = async () => {
     try {
@@ -21,7 +43,9 @@ const RegularDashboard = () => {
   return (
     <div>
       <div className="navbar">
-        <h1>Regular Dashboard</h1>
+        <div className="navbar-left">
+          <span className="user-info-display">Name: {userInfo.firstName} {userInfo.lastName}</span> 
+        </div>
         <div className="navbar-right">
           <span className="username-display">Logged in as: {username}</span>
           <Link to="#" onClick={handleLogout}>Logout</Link>  
@@ -33,7 +57,7 @@ const RegularDashboard = () => {
           <h2>Navigation</h2>
           <Link to="/reg-get-email">Read Messages</Link>
           <Link to="/regular-user-report">User Report</Link> 
-          <Link to="">...</Link>
+          <Link to="/user-journalizing">Journalizing</Link>
           <Link to="">...</Link>
         </div>
 

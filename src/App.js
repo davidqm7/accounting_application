@@ -17,6 +17,9 @@ import RegularGetEmail from './Components/RegularGetEmail';
 import ManagerGetEmail from './Components/ManagerGetEmail';
 import ManagerUserReport from './Components/ManagerUserReport';
 import RegularUserReport from './Components/RegularUserReport';
+import UserJournalizing from './Components/UserJournalizing';
+import ManagerJournalizing from './Components/ManagerJournalizing';
+import AdminJournalizing from './Components/AdminJournalizing';
 
 
 const App = () => {
@@ -38,19 +41,21 @@ const App = () => {
       <Route path="/activation" element={<Activation />} />
        <Route path="/report" element={<UserReport />} />
        <Route path="/update" element={<UpdateInformation />} />
-       
+       <Route path="/admin-journalizing" element={<AdminJournalizing />} />
 
       <Route path="/manager" element={<ManagerDashboard />} />
       <Route path="/manager-get-email" element={<ManagerGetEmail />} />
       <Route path="/manager-user-report" element={<ManagerUserReport />} />
-      
+      <Route path="/manager-journalizing" element={<ManagerJournalizing />} />
 
        <Route path="/user-dashboard" element={<RegularDashboard />} />
        <Route path="/reg-get-email" element={<RegularGetEmail />} />
        <Route path="/regular-user-report" element={<RegularUserReport />} />
+       <Route path="/user-journalizing" element={<UserJournalizing />} />
 
 
-      </Routes>
+    </Routes>
+
     </div>
   );
 };
