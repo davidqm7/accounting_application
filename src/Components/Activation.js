@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, updateDoc, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, updateDoc, doc, query, where } from "firebase/firestore";
 import { db } from '../firebase';
 import './Activation.css'; 
 
 const Activation = () => {
   const [users, setUsers] = useState([]);
-  const [errorMessage, setErrorMessage] = useState(''); 
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -48,31 +47,30 @@ const Activation = () => {
     }
   };
 
-  const checkUserBalance = async (userId) => {
-    try {
-      const accountDoc = await getDoc(doc(db, 'userAccounts', userId));
-      if (accountDoc.exists()) {
-        const userAccount = accountDoc.data();
-        return userAccount.balance || 0; 
-      }
-    } catch (error) {
-      console.error("Error fetching user balance:", error);
-    }
-    return 0;
-  };
-
   const toggleStatus = async (user) => {
     const newStatus = user.status === 'Active' ? 'Inactive' : 'Active';
-    setErrorMessage(''); 
 
     if (newStatus === 'Inactive') {
-      const userBalance = await checkUserBalance(user.id);
-      if (userBalance > 0) {
-        setErrorMessage(`User cannot be deactivated because they have a balance of $${userBalance}.`);
+      
+      try {
+        const accountsQuery = query(collection(db, 'userAccounts'), where("uid", "==", user.uid));
+        const accountsSnapshot = await getDocs(accountsQuery);
+        if (!accountsSnapshot.empty) {
+          const accountData = accountsSnapshot.docs[0].data(); 
+          const balance = parseFloat(accountData.balance); 
+
+          if (balance > 0) {
+            alert(`Cannot deactivate user with balance greater than zero. Current balance: ${balance}`);
+            return;
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user balance:", error);
         return;
       }
     }
 
+    
     if (newStatus === 'Active' && !user.username) {
       const generatedUsername = generateUsername(user.firstName, user.lastName, user.createdAt);
 
@@ -101,13 +99,6 @@ const Activation = () => {
   return (
     <div className="activation-container">
       <h1>Admin User Management</h1>
-
-      {errorMessage && (
-        <div className="error-message">
-          {errorMessage}
-        </div>
-      )}
-
       <table>
         <thead>
           <tr>
@@ -127,7 +118,7 @@ const Activation = () => {
               <td className={`status ${user.status.toLowerCase()}`}>{user.status}</td>
               <td>
                 <button 
-                title = "Button to Activate or Deactivate an account"
+                title="Button to Activate or Deactivate an account"
                   className={`toggle-button ${user.status === 'Active' ? 'deactivate' : 'activate'}`}
                   onClick={() => toggleStatus(user)}
                 >
