@@ -21,7 +21,7 @@ const UserReport = () => {
                 const usersList = userRequestsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 const accountsList = userAccountsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-                // Merge users with accounts data (if needed)
+               
                 const mergedUsers = usersList.map(user => ({
                     ...user,
                     accountDetails: accountsList.find(account => account.uid === user.uid)
@@ -47,17 +47,14 @@ const UserReport = () => {
         }
     };
 
-    const goToDetails = (userId) => {
-        navigate(`/details`, { state: { userId } });
+ 
+    
+    const goToEdit = (uid) => {
+        navigate(`/edits/${uid}`);
     };
-
-    const goToEdit = (userId) => {
-        navigate(`/edit`, { state: { userId } });
-    };
-
-    // Filter users based on search query (by account number or account name)
+    
     const filteredUsers = users.filter(user => {
-        const accountNumber = user?.accountDetails?.accountNumber || ''; // Replace with actual account number key
+        const accountNumber = user?.accountDetails?.accountNumber || ''; 
         const accountName = `${user.firstName} ${user.lastName}`.toLowerCase();
 
         return accountNumber.includes(searchQuery) || accountName.includes(searchQuery.toLowerCase());
@@ -91,7 +88,7 @@ const UserReport = () => {
                     type="text" 
                     placeholder="Search by account number or account name" 
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)} // Update search query state
+                    onChange={(e) => setSearchQuery(e.target.value)} 
                     className="search-bar"
                 />
             </div>
@@ -109,15 +106,15 @@ const UserReport = () => {
                                     <strong>Status:</strong> {user.status ? 'Active' : 'Inactive'}
                                 </div>
                                 <div className="user-actions">
-                                    <button 
+                                <button 
                                     title="View detailed information about this user" 
-                                    onClick={() => goToDetails(user.id)} className="details-btn">Details</button>
+                                     onClick={() => navigate(`/details/${user.uid}`)} className="details-btn">Details</button>
                                     <button 
                                     title="Edit user information" 
-                                    onClick={() => goToEdit(user.id)} className="edit-btn">Edit</button>
+                                    onClick={() => goToEdit(user.uid)} className="edit-btn">Edit</button>
                                     <i className={user.status ? "fas fa-user-lock" : "fas fa-user-check"} 
-                                        title={user.status ? "Deactivate User" : "Activate User"} 
-                                        onClick={() => toggleUserStatus(user.id, user.status)}></i>
+                                    title={user.status ? "Deactivate User" : "Activate User"} 
+                                    onClick={() => toggleUserStatus(user.id, user.status)}></i>
                                 </div>
                             </div>
                         ))

@@ -66,8 +66,8 @@ const Activation = () => {
 
   const logStatusChange = async (username, newStatus) => {
     try {
-      const currentUser = auth.currentUser; // Get the currently signed-in user
-      const changedBy = currentUser ? currentUser.uid : "BjHOKaqXIjflNTJLmBVkNprF4JI2"; // Default UID if no user is signed in
+      const currentUser = auth.currentUser; 
+      const changedBy = currentUser ? currentUser.uid : "BjHOKaqXIjflNTJLmBVkNprF4JI2"; 
 
       const messageString = `User ${username} status changed to ${newStatus}`;
       const messageTime = Timestamp.now();
@@ -75,7 +75,7 @@ const Activation = () => {
       await addDoc(collection(db, 'eventLogMessages'), {
         messageString,
         messageTime,
-        changedBy // Add changedBy field
+        changedBy 
       });
     } catch (error) {
       console.error('Error logging status change:', error);
@@ -87,7 +87,7 @@ const Activation = () => {
     setErrorMessage('');
 
     if (newStatus === 'Inactive') {
-      // Check user balance before deactivation
+      
       const userBalance = await checkUserBalance(user.id);
       if (userBalance > 0) {
         setErrorMessage(`User cannot be deactivated because they have a balance of $${userBalance}.`);

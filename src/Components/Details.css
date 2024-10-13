@@ -1,0 +1,28 @@
+.details-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    background-color: #f9f9f9;
+}
+
+.details-section {
+    margin-bottom: 20px;
+}
+
+.details-section h2 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.details-section p {
+    font-size: 16px;
+    margin: 5px 0;
+    color: #555;
+}
+
+.details-section p strong {
+    color: #333;
+}

@@ -21,6 +21,8 @@ import UserJournalizing from './Components/UserJournalizing';
 import ManagerJournalizing from './Components/ManagerJournalizing';
 import AdminJournalizing from './Components/AdminJournalizing';
 import EventLog from './Components/EventLog';
+import Details from './Components/Details'; 
+import Edits from './Components/Edits'; 
 
 
 const App = () => {
@@ -44,6 +46,8 @@ const App = () => {
        <Route path="/update" element={<UpdateInformation />} />
        <Route path="/admin-journalizing" element={<AdminJournalizing />} />
        <Route path="/event-log" element={<EventLog />} />
+       <Route path="/details/:uid" element={<Details />} />
+       <Route path="/edits/:uid" element={<Edits />} />
 
       <Route path="/manager" element={<ManagerDashboard />} />
       <Route path="/manager-get-email" element={<ManagerGetEmail />} />
