@@ -100,6 +100,7 @@ const AdminDashboard = () => {
           <Link to="/email">Email</Link>
           <Link to="/create-user">Create a User</Link>
           <Link to="/activation">Activation</Link>
+          <Link to="/event-log">Event Log</Link>
           <Link to="/admin-journalizing">Journalizing</Link>
         </div>
 

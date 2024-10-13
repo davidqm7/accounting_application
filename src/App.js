@@ -20,6 +20,7 @@ import RegularUserReport from './Components/RegularUserReport';
 import UserJournalizing from './Components/UserJournalizing';
 import ManagerJournalizing from './Components/ManagerJournalizing';
 import AdminJournalizing from './Components/AdminJournalizing';
+import EventLog from './Components/EventLog';
 
 
 const App = () => {
@@ -42,6 +43,7 @@ const App = () => {
        <Route path="/report" element={<UserReport />} />
        <Route path="/update" element={<UpdateInformation />} />
        <Route path="/admin-journalizing" element={<AdminJournalizing />} />
+       <Route path="/event-log" element={<EventLog />} />
 
       <Route path="/manager" element={<ManagerDashboard />} />
       <Route path="/manager-get-email" element={<ManagerGetEmail />} />

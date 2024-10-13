@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, updateDoc, doc, getDoc } from "firebase/firestore";
-import { db } from '../firebase';
+import { collection, getDocs, updateDoc, doc, getDoc, addDoc, Timestamp } from "firebase/firestore"; 
+import { db } from '../firebase'; 
+import { getAuth } from "firebase/auth"; 
 import './Activation.css'; 
 
 const Activation = () => {
   const [users, setUsers] = useState([]);
-  const [errorMessage, setErrorMessage] = useState(''); 
+  const [errorMessage, setErrorMessage] = useState('');
+  const auth = getAuth(); // Get the authentication instance
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -25,7 +27,7 @@ const Activation = () => {
     const lastNameLower = lastName.toLowerCase();
     const creationDate = new Date(createdAt.seconds * 1000);
     const month = ("0" + (creationDate.getMonth() + 1)).slice(-2);
-    const year = creationDate.getFullYear().toString().slice(-2); 
+    const year = creationDate.getFullYear().toString().slice(-2);
 
     return `${firstInitial}${lastNameLower}${month}${year}`;
   };
@@ -50,10 +52,11 @@ const Activation = () => {
 
   const checkUserBalance = async (userId) => {
     try {
+      // Check user balance in userAccounts collection
       const accountDoc = await getDoc(doc(db, 'userAccounts', userId));
       if (accountDoc.exists()) {
         const userAccount = accountDoc.data();
-        return userAccount.balance || 0; 
+        return userAccount.balance || 0;
       }
     } catch (error) {
       console.error("Error fetching user balance:", error);
@@ -61,11 +64,30 @@ const Activation = () => {
     return 0;
   };
 
+  const logStatusChange = async (username, newStatus) => {
+    try {
+      const currentUser = auth.currentUser; // Get the currently signed-in user
+      const changedBy = currentUser ? currentUser.uid : "BjHOKaqXIjflNTJLmBVkNprF4JI2"; // Default UID if no user is signed in
+
+      const messageString = `User ${username} status changed to ${newStatus}`;
+      const messageTime = Timestamp.now();
+
+      await addDoc(collection(db, 'eventLogMessages'), {
+        messageString,
+        messageTime,
+        changedBy // Add changedBy field
+      });
+    } catch (error) {
+      console.error('Error logging status change:', error);
+    }
+  };
+
   const toggleStatus = async (user) => {
     const newStatus = user.status === 'Active' ? 'Inactive' : 'Active';
-    setErrorMessage(''); 
+    setErrorMessage('');
 
     if (newStatus === 'Inactive') {
+      // Check user balance before deactivation
       const userBalance = await checkUserBalance(user.id);
       if (userBalance > 0) {
         setErrorMessage(`User cannot be deactivated because they have a balance of $${userBalance}.`);
@@ -85,6 +107,8 @@ const Activation = () => {
         setUsers(users.map(u => 
           u.id === user.id ? { ...u, status: newStatus, username: generatedUsername } : u
         ));
+
+        logStatusChange(generatedUsername, newStatus);
       } catch (error) {
         console.error("Error updating user status and username:", error);
       }
@@ -92,6 +116,8 @@ const Activation = () => {
       try {
         await updateDoc(doc(db, 'userRequests', user.id), { status: newStatus });
         setUsers(users.map(u => u.id === user.id ? { ...u, status: newStatus } : u));
+
+        logStatusChange(user.username, newStatus);
       } catch (error) {
         console.error("Error updating user status:", error);
       }
@@ -127,7 +153,6 @@ const Activation = () => {
               <td className={`status ${user.status.toLowerCase()}`}>{user.status}</td>
               <td>
                 <button 
-                title = "Button to Activate or Deactivate an account"
                   className={`toggle-button ${user.status === 'Active' ? 'deactivate' : 'activate'}`}
                   onClick={() => toggleStatus(user)}
                 >
@@ -143,4 +168,8 @@ const Activation = () => {
 };
 
 export default Activation;
+
+
+
+
 

@@ -28,8 +28,7 @@ const SendEmail = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     alert(`Email sent to ${selectedUserEmail}! Subject: ${emailSubject}, Message: ${emailMessage}`);
-    // Here, you would implement the actual email sending functionality using your server or a service like SendGrid.
-
+    // Here, you would implement the actual email sending functionality using your server or a service like SendGrid
   };
 
   return (
