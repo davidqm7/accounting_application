@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Account List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>User Account Details</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Account Name</th>
+                <th>Account Number</th>
+                <th>Account Description</th>
+                <th>Account Category</th>
+                <th>Credit</th>
+                <th>Debit</th>
+                <th>Balance</th>
+            </tr>
+        </thead>
+        <tbody id="userList">
+            <!-- User account details will be inserted here -->
+        </tbody>
+    </table>
+
+    <script>
+      
+        const users = [
+            { userId: 1, accountName: 'John Doe', accountNumber: '1234567890', description: 'Savings Account', category: 'Savings', credit: 5000, debit: 1000, balance: 4000 },
+            { userId: 2, accountName: 'Jane Smith', accountNumber: '2345678901', description: 'Checking Account', category: 'Checking', credit: 12000, debit: 2000, balance: 10000 },
+            { userId: 3, accountName: 'Robert Brown', accountNumber: '3456789012', description: 'Savings Account', category: 'Savings', credit: 8000, debit: 500, balance: 7500 },
+            { userId: 4, accountName: 'Emily White', accountNumber: '4567890123', description: 'Business Account', category: 'Business', credit: 15000, debit: 3000, balance: 12000 },
+            { userId: 5, accountName: 'Michael Green', accountNumber: '5678901234', description: 'Savings Account', category: 'Savings', credit: 7000, debit: 1500, balance: 5500 },
+            { userId: 6, accountName: 'Sarah Lee', accountNumber: '6789012345', description: 'Checking Account', category: 'Checking', credit: 9000, debit: 2000, balance: 7000 },
+            { userId: 7, accountName: 'David Clark', accountNumber: '7890123456', description: 'Business Account', category: 'Business', credit: 22000, debit: 5000, balance: 17000 },
+            { userId: 8, accountName: 'Sophia Adams', accountNumber: '8901234567', description: 'Savings Account', category: 'Savings', credit: 6500, debit: 1200, balance: 5300 },
+            { userId: 9, accountName: 'James Wilson', accountNumber: '9012345678', description: 'Checking Account', category: 'Checking', credit: 14000, debit: 3500, balance: 10500 },
+            { userId: 10, accountName: 'Olivia Brown', accountNumber: '0123456789', description: 'Savings Account', category: 'Savings', credit: 11000, debit: 4000, balance: 7000 }
+        ];
+
+       
+        function displayUserList() {
+            const userList = document.getElementById('userList');
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${user.userId}</td>
+                    <td>${user.accountName}</td>
+                    <td>${user.accountNumber}</td>
+                    <td>${user.description}</td>
+                    <td>${user.category}</td>
+                    <td>${user.credit}</td>
+                    <td>${user.debit}</td>
+                    <td>${user.balance}</td>
+                `;
+                
+                userList.appendChild(row);
+            });
+        }
+
+        
+        window.onload = displayUserList;
+    </script>
+
+</body>
+</html>

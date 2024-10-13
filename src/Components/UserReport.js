@@ -6,6 +6,7 @@ import './UserReport.css';
 
 const UserReport = () => {
     const [users, setUsers] = useState([]);
+    const [searchQuery, setSearchQuery] = useState(''); 
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -54,6 +55,14 @@ const UserReport = () => {
         navigate(`/edit`, { state: { userId } });
     };
 
+    // Filter users based on search query (by account number or account name)
+    const filteredUsers = users.filter(user => {
+        const accountNumber = user?.accountDetails?.accountNumber || ''; // Replace with actual account number key
+        const accountName = `${user.firstName} ${user.lastName}`.toLowerCase();
+
+        return accountNumber.includes(searchQuery) || accountName.includes(searchQuery.toLowerCase());
+    });
+
     return (
         <div className="user-report-container">
             <h1>Admin Dashboard - User Report</h1>
@@ -77,29 +86,44 @@ const UserReport = () => {
             </div>
 
             <div className="section">
+                <h2>Search Users</h2>
+                <input 
+                    type="text" 
+                    placeholder="Search by account number or account name" 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)} // Update search query state
+                    className="search-bar"
+                />
+            </div>
+
+            <div className="section">
                 <h2>All Users</h2>
                 <div className="user-list">
-                    {users.map(user => (
-                        <div className="user-card" key={user.id}>
-                            <div className="user-details">
-                                <strong>Username:</strong> {user.firstName} {user.lastName}<br />
-                                <strong>Email:</strong> {user.email}<br />
-                                <strong>Role:</strong> {user.role}<br />
-                                <strong>Status:</strong> {user.status ? 'Active' : 'Inactive'}
+                    {filteredUsers.length > 0 ? (
+                        filteredUsers.map(user => (
+                            <div className="user-card" key={user.id}>
+                                <div className="user-details">
+                                    <strong>Username:</strong> {user.firstName} {user.lastName}<br />
+                                    <strong>Email:</strong> {user.email}<br />
+                                    <strong>Account Number:</strong> {user?.accountDetails?.accountNumber || 'N/A'}<br />
+                                    <strong>Status:</strong> {user.status ? 'Active' : 'Inactive'}
+                                </div>
+                                <div className="user-actions">
+                                    <button 
+                                    title="View detailed information about this user" 
+                                    onClick={() => goToDetails(user.id)} className="details-btn">Details</button>
+                                    <button 
+                                    title="Edit user information" 
+                                    onClick={() => goToEdit(user.id)} className="edit-btn">Edit</button>
+                                    <i className={user.status ? "fas fa-user-lock" : "fas fa-user-check"} 
+                                        title={user.status ? "Deactivate User" : "Activate User"} 
+                                        onClick={() => toggleUserStatus(user.id, user.status)}></i>
+                                </div>
                             </div>
-                            <div className="user-actions">
-                                <button 
-                                title = "View detailed information about this user" 
-                                onClick={() => goToDetails(user.id)} className="details-btn">Details</button>
-                                <button 
-                                title = "Edit user information" 
-                                onClick={() => goToEdit(user.id)} className="edit-btn">Edit</button>
-                                <i className={user.status ? "fas fa-user-lock" : "fas fa-user-check"} 
-                                    title={user.status ? "Deactivate User" : "Activate User"} 
-                                    onClick={() => toggleUserStatus(user.id, user.status)}></i>
-                            </div>
-                        </div>
-                    ))}
+                        ))
+                    ) : (
+                        <p>No users found matching your search criteria.</p>
+                    )}
                 </div>
             </div>
         </div>
