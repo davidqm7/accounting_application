@@ -10,37 +10,45 @@ const Edits = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [saving, setSaving] = useState(false); 
+    const [docIds, setDocIds] = useState({ userAccountId: '', userRequestId: '' }); // Store doc IDs here
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchDetails = async () => {
             try {
-              
+                // Fetch user from userAccounts collection
                 const userAccountsQuery = query(collection(db, 'userAccounts'), where('uid', '==', uid));
                 const userAccountsSnapshot = await getDocs(userAccountsQuery);
-
+                
                 let userAccountData = null;
+                let userAccountId = '';
                 if (userAccountsSnapshot.docs.length > 0) {
-                    userAccountData = userAccountsSnapshot.docs[0].data();
+                    const doc = userAccountsSnapshot.docs[0];
+                    userAccountData = doc.data();
+                    userAccountId = doc.id; // Store the document ID
                     console.log('User Account Data:', userAccountData);
                 }
 
-                
+                // Fetch user from userRequests collection
                 const userRequestsQuery = query(collection(db, 'userRequests'), where('uid', '==', uid));
                 const userRequestsSnapshot = await getDocs(userRequestsQuery);
 
                 let userRequestsData = null;
+                let userRequestId = '';
                 if (userRequestsSnapshot.docs.length > 0) {
-                    userRequestsData = userRequestsSnapshot.docs[0].data();
+                    const doc = userRequestsSnapshot.docs[0];
+                    userRequestsData = doc.data();
+                    userRequestId = doc.id; // Store the document ID
                     console.log('User Requests Data:', userRequestsData);
                 }
 
-               
+                // Combine both user account and request data
                 if (userAccountData && userRequestsData) {
                     setUserDetails({
                         ...userAccountData,
                         ...userRequestsData,
                     });
+                    setDocIds({ userAccountId, userRequestId }); // Set doc IDs
                 } else {
                     setError("No data found for this user.");
                 }
@@ -48,7 +56,7 @@ const Edits = () => {
                 console.error("Error fetching details:", error);
                 setError("Error fetching user data.");
             } finally {
-                setLoading(false); 
+                setLoading(false); // Stop loading
             }
         };
 
@@ -68,8 +76,10 @@ const Edits = () => {
         setSaving(true);
 
         try {
-           
-            const userAccountsRef = doc(db, 'userAccounts', uid);
+            const { userAccountId, userRequestId } = docIds;
+
+            // Update userAccounts document
+            const userAccountsRef = doc(db, 'userAccounts', userAccountId); // Use the document ID
             await updateDoc(userAccountsRef, {
                 catagory: userDetails.catagory,
                 subcatagory: userDetails.subcatagory,
@@ -77,14 +87,15 @@ const Edits = () => {
                 credit: userDetails.credit,
                 debit: userDetails.debit,
                 initialBalance: userDetails.initialBalance,
+                balance: userDetails.balance,
                 normalSide: userDetails.normalSide,
                 number: userDetails.number,
                 order: userDetails.order,
                 statement: userDetails.statement,
             });
 
-            
-            const userRequestsRef = doc(db, 'userRequests', uid);
+            // Update userRequests document
+            const userRequestsRef = doc(db, 'userRequests', userRequestId); // Use the document ID
             await updateDoc(userRequestsRef, {
                 firstName: userDetails.firstName,
                 lastName: userDetails.lastName,
@@ -142,6 +153,10 @@ const Edits = () => {
                     <label>
                         Initial Balance:
                         <input type="text" name="initialBalance" value={userDetails.initialBalance} onChange={handleInputChange} />
+                    </label>
+                    <label>
+                        Balance:
+                        <input type="text" name="balance" value={userDetails.balance} onChange={handleInputChange} />
                     </label>
                     <label>
                         Normal Side:
