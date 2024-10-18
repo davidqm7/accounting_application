@@ -19,7 +19,7 @@ This project is designed as part of the SWE4713 course. It is a web application 
 
 ## Team Members
 
-David Quintanilla, Jesse Israel, Husain Falih
+David Quintanilla, Jesse Israel, Husain Falih, Jose Mendoza
 
 ## Technology Stack
 
