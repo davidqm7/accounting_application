@@ -23,6 +23,7 @@ import AdminJournalizing from './Components/AdminJournalizing';
 import EventLog from './Components/EventLog';
 import Details from './Components/Details'; 
 import Edits from './Components/Edits'; 
+import GeneralLedger from './Components/GeneralLedger'; 
 
 
 const App = () => {
@@ -58,6 +59,7 @@ const App = () => {
        <Route path="/reg-get-email" element={<RegularGetEmail />} />
        <Route path="/regular-user-report" element={<RegularUserReport />} />
        <Route path="/user-journalizing" element={<UserJournalizing />} />
+       <Route path="/general-ledger" element={<GeneralLedger />} />
 
 
     </Routes>

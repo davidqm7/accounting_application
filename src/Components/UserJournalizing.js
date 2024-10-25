@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, addDoc, getDocs, Timestamp } from "firebase/firestore";
-import { db } from '../firebase';  // Adjust the import path as necessary
-import './UserJournalizing.css'; // Make sure to import the CSS file
+import { db } from '../firebase';
+import './UserJournalizing.css';
 
 const UserJournalizing = () => {
   const [entryName, setEntryName] = useState('');
@@ -11,6 +11,8 @@ const UserJournalizing = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showJournalEntries, setShowJournalEntries] = useState(false);
   const [journalEntries, setJournalEntries] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
 
   useEffect(() => {
     const fetchAccounts = async () => {
@@ -19,7 +21,7 @@ const UserJournalizing = () => {
       const accountsList = accountsSnapshot.docs.map(doc => ({
         uid: doc.id,
         name: doc.data().name,
-        catagory: doc.data().catagory // Retain incorrect spelling
+        catagory: doc.data().catagory
       }));
       setAccounts(accountsList);
     };
@@ -32,7 +34,7 @@ const UserJournalizing = () => {
   };
 
   const handleSourceDocChange = (e) => {
-    setSourceDoc(e.target.files[0]); // Allow file selection but not uploaded
+    setSourceDoc(e.target.files[0]);
   };
 
   const handleReset = () => {
@@ -46,7 +48,7 @@ const UserJournalizing = () => {
   };
 
   const handleTransactionChange = (index, field, value) => {
-    const updatedTransactions = transactions.map((transaction, i) => 
+    const updatedTransactions = transactions.map((transaction, i) =>
       i === index ? { ...transaction, [field]: value } : transaction
     );
     setTransactions(updatedTransactions);
@@ -55,11 +57,12 @@ const UserJournalizing = () => {
   const handleAccountSelect = (index, accountUid) => {
     const selectedAccount = accounts.find(account => account.uid === accountUid);
     const updatedTransactions = transactions.map((transaction, i) =>
-      i === index ? { 
-        ...transaction, 
-        accountUid: accountUid, 
-        accountName: selectedAccount.name, // Store the account name
-        catagory: selectedAccount.catagory 
+      i === index ? {
+        ...transaction,
+        accountUid: accountUid,
+        accountName: selectedAccount.name,
+        // Remove this line if you want to allow users to input category manually
+        catagory: transaction.catagory || selectedAccount.catagory
       } : transaction
     );
     setTransactions(updatedTransactions);
@@ -76,17 +79,31 @@ const UserJournalizing = () => {
     }
 
     try {
-      // Create the transactionArray string
-      const transactionArray = transactions.map(transaction => 
+      // Create the transactionArray string and sort by category
+      const transactionArray = transactions.map(transaction =>
         `${transaction.accountName},${transaction.catagory},${transaction.description},${transaction.amount}`
-      );
+      ).sort((a, b) => {
+        const categoryA = a.split(',')[1].toLowerCase();
+        const categoryB = b.split(',')[1].toLowerCase();
+
+        // Define priority for both singular and plural forms
+        const priority = {
+          debit: 1, debits: 1,
+          asset: 2, assets: 2,
+          credit: 3, credits: 3,
+          liability: 4, liabilities: 4
+        };
+
+        // Sort based on priority; unknown categories default to a lower priority
+        return (priority[categoryA] || 5) - (priority[categoryB] || 5);
+      });
 
       // Add journal entry to Firestore
       await addDoc(collection(db, 'journalEntries'), {
         journalEntryName: entryName,
-        sourceDoc: sourceDoc ? sourceDoc.name : '', // Save file name only if present
+        sourceDoc: sourceDoc ? sourceDoc.name : '',
         status: "pending",
-        transactionArray: transactionArray, // Array of comma-separated strings
+        transactionArray: transactionArray,
         createdAt: Timestamp.now()
       });
 
@@ -106,7 +123,7 @@ const UserJournalizing = () => {
     const entries = journalEntriesSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
-    }));
+    })).sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
     setJournalEntries(entries);
     setShowJournalEntries(true);
   };
@@ -115,13 +132,73 @@ const UserJournalizing = () => {
     setShowJournalEntries(false);
   };
 
+  const filteredEntries = journalEntries.filter(entry => {
+    const matchesStatus = !statusFilter || entry.status === statusFilter;
+    const matchesSearch = entry.transactionArray.some(transaction => {
+      const [account, , , amount] = transaction.split(',');
+      return (
+        account.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        amount.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        entry.createdAt.toDate().toLocaleDateString().includes(searchQuery)
+      );
+    });
+    return matchesStatus && matchesSearch;
+  });
+
   return (
     <div className="user-journalizing-container">
-      {/* Display Journal Entries Button */}
       {showJournalEntries ? (
         <div>
           <button onClick={handleBack}>Back</button>
           <h1>Journal Entries</h1>
+
+          {/* Search bar and Status Filter */}
+          <input
+            type="text"
+            placeholder="Search by Account Name, Amount, or Date"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <div>
+            <label>
+              <input
+                type="radio"
+                value=""
+                checked={statusFilter === ""}
+                onChange={() => setStatusFilter('')}
+              />
+              All
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="pending"
+                checked={statusFilter === "pending"}
+                onChange={() => setStatusFilter('pending')}
+              />
+              Pending
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="approved"
+                checked={statusFilter === "approved"}
+                onChange={() => setStatusFilter('approved')}
+              />
+              Approved
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="rejected"
+                checked={statusFilter === "rejected"}
+                onChange={() => setStatusFilter('rejected')}
+              />
+              Rejected
+            </label>
+          </div>
+
+          {/* Journal Entries Table */}
           <table>
             <thead>
               <tr>
@@ -133,7 +210,7 @@ const UserJournalizing = () => {
               </tr>
             </thead>
             <tbody>
-              {journalEntries.map((entry) => (
+              {filteredEntries.map((entry) => (
                 <tr key={entry.id}>
                   <td>{entry.journalEntryName}</td>
                   <td>
@@ -167,24 +244,24 @@ const UserJournalizing = () => {
           <form onSubmit={handleSubmit}>
             {/* Entry Name */}
             <label htmlFor="entryName">Entry Name:</label>
-            <input 
-              type="text" 
-              id="entryName" 
-              name="entryName" 
-              value={entryName} 
-              onChange={handleEntryNameChange} 
+            <input
+              type="text"
+              id="entryName"
+              name="entryName"
+              value={entryName}
+              onChange={handleEntryNameChange}
               required
             />
             <br /><br />
 
             {/* Source Doc */}
             <label htmlFor="sourceDoc">Source Doc (PDF, Word, CSV, JPG, PNG):</label>
-            <input 
-              type="file" 
-              id="sourceDoc" 
-              name="sourceDoc" 
-              accept=".pdf,.doc,.docx,.csv,.jpg,.jpeg,.png" 
-              onChange={handleSourceDocChange} 
+            <input
+              type="file"
+              id="sourceDoc"
+              name="sourceDoc"
+              accept=".pdf,.doc,.docx,.csv,.jpg,.jpeg,.png"
+              onChange={handleSourceDocChange}
             />
             <br /><br />
 
@@ -203,25 +280,22 @@ const UserJournalizing = () => {
                   required
                 >
                   <option value="">Select Account</option>
-                  {accounts.map(account => (
-                    <option key={account.uid} value={account.uid}>
-                      {account.name}
-                    </option>
+                  {accounts.map((account) => (
+                    <option key={account.uid} value={account.uid}>{account.name}</option>
                   ))}
                 </select>
                 <br /><br />
 
-                {/* Category Textbox (Read-Only) */}
                 <label htmlFor={`catagory-${index}`}>Category:</label>
                 <input
                   type="text"
                   id={`catagory-${index}`}
                   value={transaction.catagory}
-                  readOnly
+                  onChange={(e) => handleTransactionChange(index, 'catagory', e.target.value)} // Allow category input
+                  required
                 />
                 <br /><br />
 
-                {/* Description */}
                 <label htmlFor={`description-${index}`}>Description:</label>
                 <input
                   type="text"
@@ -232,7 +306,6 @@ const UserJournalizing = () => {
                 />
                 <br /><br />
 
-                {/* Amount (Allow any text input) */}
                 <label htmlFor={`amount-${index}`}>Amount:</label>
                 <input
                   type="text"
@@ -258,6 +331,10 @@ const UserJournalizing = () => {
 };
 
 export default UserJournalizing;
+
+
+
+
 
 
 
