@@ -14,13 +14,15 @@ const UserReport = () => {
                 const eventLogMessagesCollection = collection(db, 'eventLogMessages'); 
                 const eventLogMessagesSnapshot = await getDocs(eventLogMessagesCollection); 
 
-                // Extract messageString, messageTime, and changedBy from each document
-                const eventLogsList = eventLogMessagesSnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    messageString: doc.data().messageString,
-                    messageTime: doc.data().messageTime?.toDate(), // Convert Firestore Timestamp to Date
-                    changedBy: doc.data().changedBy || 'Unknown' // Fetch changedBy or default to 'Unknown'
-                }));
+                // Extract and sort by messageTime in descending order
+                const eventLogsList = eventLogMessagesSnapshot.docs
+                    .map(doc => ({
+                        id: doc.id,
+                        messageString: doc.data().messageString,
+                        messageTime: doc.data().messageTime?.toDate(), // Convert Firestore Timestamp to Date
+                        changedBy: doc.data().changedBy || 'Unknown' // Fetch changedBy or default to 'Unknown'
+                    }))
+                    .sort((a, b) => b.messageTime - a.messageTime); // Sort in descending order
 
                 setEventLogs(eventLogsList); // Store in state
             } catch (error) {
@@ -38,7 +40,7 @@ const UserReport = () => {
                     <tr>
                         <th>Event</th>
                         <th>Time</th>
-                        <th>Changed By</th> {/* New column for changedBy */}
+                        <th>Changed By</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -47,7 +49,7 @@ const UserReport = () => {
                             <tr key={log.id}>
                                 <td>{log.messageString || 'N/A'}</td>
                                 <td>{log.messageTime ? log.messageTime.toLocaleString() : 'N/A'}</td>
-                                <td>{log.changedBy}</td> {/* Display changedBy */}
+                                <td>{log.changedBy}</td>
                             </tr>
                         ))
                     ) : (
@@ -62,4 +64,5 @@ const UserReport = () => {
 };
 
 export default UserReport;
+
 
