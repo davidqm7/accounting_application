@@ -1,0 +1,84 @@
+.journal-entry-container {
+    width: 80%;
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    font-family: Arial, sans-serif;
+    color: #333;
+}
+
+.journal-entry-container h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.entry-info {
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.entry-info h2 {
+    font-size: 1.5rem;
+    color: #555;
+}
+
+.entry-info p {
+    margin: 5px 0;
+    font-size: 1rem;
+}
+
+.transactions-section {
+    margin-top: 20px;
+}
+
+.transactions-section h3 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.transactions-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.transactions-table th, .transactions-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.transactions-table th {
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+.transactions-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.back-button {
+    display: block;
+    width: fit-content;
+    margin: 20px auto 0;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    text-align: center;
+}
+
+.back-button:hover {
+    background-color: #0056b3;
+}

@@ -31,7 +31,7 @@ const NavBar = () => {
           {showCalandar ? 'Calendar' : 'Calendar'}
         </button>
 
-        <p>By David Quintanilla, Jesse Israel, Husain Falih</p>
+        <p>By David Quintanilla, Jesse Israel, Husain Falih, Jose Mendoza</p>
         <h1>Numbers Games Accounting</h1>
 
         <button className="help-button" title="Opens the help popup" onClick={handleHelpClick}>
