@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { collection, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
+import { collection, query, where, getDocs, updateDoc, doc, addDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 import './Edit.css';
 
 const Edits = () => {
     const { uid } = useParams(); 
     const [userDetails, setUserDetails] = useState(null);
+    const [initialValues, setInitialValues] = useState(null); // Store initial values
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [saving, setSaving] = useState(false); 
-    const [docIds, setDocIds] = useState({ userAccountId: '', userRequestId: '' }); // Store doc IDs here
+    const [docIds, setDocIds] = useState({ userAccountId: '', userRequestId: '' });
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchDetails = async () => {
             try {
-                // Fetch user from userAccounts collection
                 const userAccountsQuery = query(collection(db, 'userAccounts'), where('uid', '==', uid));
                 const userAccountsSnapshot = await getDocs(userAccountsQuery);
                 
@@ -25,11 +25,9 @@ const Edits = () => {
                 if (userAccountsSnapshot.docs.length > 0) {
                     const doc = userAccountsSnapshot.docs[0];
                     userAccountData = doc.data();
-                    userAccountId = doc.id; // Store the document ID
-                    console.log('User Account Data:', userAccountData);
+                    userAccountId = doc.id;
                 }
 
-                // Fetch user from userRequests collection
                 const userRequestsQuery = query(collection(db, 'userRequests'), where('uid', '==', uid));
                 const userRequestsSnapshot = await getDocs(userRequestsQuery);
 
@@ -38,17 +36,14 @@ const Edits = () => {
                 if (userRequestsSnapshot.docs.length > 0) {
                     const doc = userRequestsSnapshot.docs[0];
                     userRequestsData = doc.data();
-                    userRequestId = doc.id; // Store the document ID
-                    console.log('User Requests Data:', userRequestsData);
+                    userRequestId = doc.id;
                 }
 
-                // Combine both user account and request data
                 if (userAccountData && userRequestsData) {
-                    setUserDetails({
-                        ...userAccountData,
-                        ...userRequestsData,
-                    });
-                    setDocIds({ userAccountId, userRequestId }); // Set doc IDs
+                    const combinedData = { ...userAccountData, ...userRequestsData };
+                    setUserDetails(combinedData);
+                    setInitialValues(combinedData); // Store initial values for change tracking
+                    setDocIds({ userAccountId, userRequestId });
                 } else {
                     setError("No data found for this user.");
                 }
@@ -56,7 +51,7 @@ const Edits = () => {
                 console.error("Error fetching details:", error);
                 setError("Error fetching user data.");
             } finally {
-                setLoading(false); // Stop loading
+                setLoading(false);
             }
         };
 
@@ -71,6 +66,18 @@ const Edits = () => {
         }));
     };
 
+    const logEvent = async (changes) => {
+        try {
+            await addDoc(collection(db, 'eventLogMessages'), {
+                messageString: `Changes made: ${changes.join(', ')}`,
+                messageTime: Timestamp.now(),
+                changedBy: uid
+            });
+        } catch (error) {
+            console.error("Error logging event:", error);
+        }
+    };
+
     const handleSave = async (e) => {
         e.preventDefault();
         setSaving(true);
@@ -78,8 +85,16 @@ const Edits = () => {
         try {
             const { userAccountId, userRequestId } = docIds;
 
+            // Determine which fields have changed
+            const changes = [];
+            for (const key in userDetails) {
+                if (userDetails[key] !== initialValues[key]) {
+                    changes.push(`${key}: "${initialValues[key]}" -> "${userDetails[key]}"`);
+                }
+            }
+
             // Update userAccounts document
-            const userAccountsRef = doc(db, 'userAccounts', userAccountId); // Use the document ID
+            const userAccountsRef = doc(db, 'userAccounts', userAccountId);
             await updateDoc(userAccountsRef, {
                 catagory: userDetails.catagory,
                 subcatagory: userDetails.subcatagory,
@@ -95,7 +110,7 @@ const Edits = () => {
             });
 
             // Update userRequests document
-            const userRequestsRef = doc(db, 'userRequests', userRequestId); // Use the document ID
+            const userRequestsRef = doc(db, 'userRequests', userRequestId);
             await updateDoc(userRequestsRef, {
                 firstName: userDetails.firstName,
                 lastName: userDetails.lastName,
@@ -105,6 +120,9 @@ const Edits = () => {
                 dob: userDetails.dob,
                 username: userDetails.username,
             });
+
+            // Log the event with detailed change information
+            await logEvent(changes);
 
             alert("User information updated successfully!");
             navigate(`/details/${uid}`);
@@ -215,3 +233,4 @@ const Edits = () => {
 };
 
 export default Edits;
+
