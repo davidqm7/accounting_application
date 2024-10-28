@@ -4,7 +4,7 @@ import { doc, getDoc, updateDoc, collection, query, where, getDocs, Timestamp } 
 import { db } from '../firebase';
 import './JournalEntry.css';
 
-const JournalEntry = () => {
+const ManagerJournalizing = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [journalEntry, setJournalEntry] = useState(null);
