@@ -15,7 +15,7 @@ const GeneralLedger = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
-  // Fetch account names for dropdown
+  
   useEffect(() => {
     const fetchUserAccounts = async () => {
       try {
@@ -29,7 +29,7 @@ const GeneralLedger = () => {
     fetchUserAccounts();
   }, []);
 
-  // Fetch account details by ID or UID
+  
   const fetchAccountDetails = async (accountId, isUid = false) => {
     try {
       const accountDocRef = isUid 
@@ -52,7 +52,7 @@ const GeneralLedger = () => {
     }
   };
 
-  // Fetch transactions for the selected account name
+  
   const fetchFilteredTransactions = async (accountName) => {
     try {
       const entriesSnapshot = await getDocs(collection(db, 'journalEntries'));
@@ -60,8 +60,10 @@ const GeneralLedger = () => {
 
       entriesSnapshot.docs.forEach(doc => {
         const data = doc.data();
+        if (data.status !== 'approved') return; 
+
         const entryName = data.journalEntryName;
-        const journalEntryId = doc.id; // Capture the journal entry ID for PR linking
+        const journalEntryId = doc.id; 
         data.transactionArray.forEach(transaction => {
           const [account, category, description, amount] = transaction.split(',');
           const transactionDate = data.createdAt.toDate();
@@ -75,7 +77,7 @@ const GeneralLedger = () => {
               amount: parseFloat(amount).toFixed(2),
               isDebit: category.trim().toLowerCase() === 'debit',
               createdAt: transactionDate,
-              journalEntryId // Store the journal entry ID for PR link
+              journalEntryId 
             });
           }
         });
@@ -87,7 +89,7 @@ const GeneralLedger = () => {
     }
   };
 
-  // Check URL parameters for account ID or UID on load
+  
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const accountId = queryParams.get('id') || queryParams.get('uid');
@@ -95,22 +97,22 @@ const GeneralLedger = () => {
 
     if (accountId) {
       setSelectedAccountId(accountId);
-      fetchAccountDetails(accountId, isUid); // Fetch account details by ID or UID
+      fetchAccountDetails(accountId, isUid); 
     }
   }, [location]);
 
-  // Handle account selection from dropdown
+  
   const handleAccountSelect = async (e) => {
     const accountId = e.target.value;
     setSelectedAccountId(accountId);
-    fetchAccountDetails(accountId); // Fetch account details by direct account ID
+    fetchAccountDetails(accountId); 
   };
 
-  // Handle date filters
+  
   const handleStartDateChange = (e) => setStartDate(new Date(e.target.value));
   const handleEndDateChange = (e) => setEndDate(new Date(e.target.value));
 
-  // Calculate balance and apply date filters
+ 
   const calculateBalance = (transactions) => {
     let currentBalance = parseFloat(startingBalance);
     return transactions
