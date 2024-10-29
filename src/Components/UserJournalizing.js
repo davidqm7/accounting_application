@@ -105,8 +105,63 @@ const UserJournalizing = () => {
     setIsSubmitting(true);
     setCurrentError(null);
 
-    // Validation and error handling omitted for brevity...
+    // Validation: Check for entry name
+    if (!entryName) {
+      setCurrentError('missingEntryName');
+      setIsSubmitting(false);
+      return;
+    }
 
+    if (debits.length === 0) {
+      setCurrentError('missingDebit');
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (credits.length === 0) {
+      setCurrentError('missingCredit');
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Validate that each debit and credit has an account and a positive amount
+    for (const transaction of debits) {
+      if (!transaction.accountUid) {
+        setCurrentError('missingDebitAccount');
+        setIsSubmitting(false);
+        return;
+      }
+      if (!transaction.amount || transaction.amount <= 0) {
+        setCurrentError('positiveDebitAmount');
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
+    for (const transaction of credits) {
+      if (!transaction.accountUid) {
+        setCurrentError('missingCreditAccount');
+        setIsSubmitting(false);
+        return;
+      }
+      if (!transaction.amount || transaction.amount <= 0) {
+        setCurrentError('positiveCreditAmount');
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
+    // Check if total debits equal total credits
+    const totalDebits = debits.reduce((sum, debit) => sum + parseFloat(debit.amount || 0), 0);
+    const totalCredits = credits.reduce((sum, credit) => sum + parseFloat(credit.amount || 0), 0);
+
+    if (totalDebits !== totalCredits) {
+      setCurrentError('debitCreditMismatch');
+      setIsSubmitting(false);
+      return;
+    }
+
+    // If all validations pass, proceed with submission
     try {
       const transactionArray = [
         ...debits.map(transaction => `${transaction.accountName},${transaction.catagory},${transaction.description},${transaction.amount}`),
@@ -153,6 +208,12 @@ const UserJournalizing = () => {
     <div className="user-journalizing-container">
       <h1>Journalizing</h1>
       <form onSubmit={handleSubmit}>
+        {currentError && (
+          <p style={{ color: 'red', fontWeight: 'bold' }}>
+            {errorMessages[currentError]}
+          </p>
+        )}
+
         <label htmlFor="entryName">Entry Name:</label>
         <input
           type="text"
@@ -177,6 +238,7 @@ const UserJournalizing = () => {
         <button type="button" onClick={handleNewTransaction}>New Transaction</button>
         <br /><br />
 
+        {/* Render Debits */}
         {debits.length > 0 && (
           <>
             <h2>Debits</h2>
@@ -195,6 +257,7 @@ const UserJournalizing = () => {
           </>
         )}
 
+        {/* Render Credits */}
         {credits.length > 0 && (
           <>
             <h2>Credits</h2>
@@ -262,12 +325,6 @@ const UserJournalizing = () => {
             </table>
           </div>
         </div>
-      )}
-
-      {currentError && (
-        <p style={{ color: 'red', fontWeight: 'bold' }}>
-          {errorMessages[currentError]}
-        </p>
       )}
     </div>
   );

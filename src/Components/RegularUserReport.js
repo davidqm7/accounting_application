@@ -34,7 +34,7 @@ const RegularUserReport = () => {
 
     return (
         <div className="regular-user-report-container">
-            <h1>Regular User Report</h1>
+            <h1>Regular User Chart of Accounts</h1>
 
             <div className="section">
                 <h2>User Summary</h2>

@@ -62,7 +62,7 @@ const UserReport = () => {
 
     return (
         <div className="user-report-container">
-            <h1>Admin Dashboard - User Report</h1>
+            <h1>Admin Chart of Accounts</h1>
 
             <div className="section">
                 <h2>User Summary</h2>
