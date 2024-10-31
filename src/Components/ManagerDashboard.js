@@ -64,6 +64,11 @@ const ManagerDashboard = () => {
           <Link to="/user-journalizing/:entryId">Journalizing</Link>
           <Link to="/manager-journalizing">Journal Entries</Link>
           <Link to="/general-ledger">General Ledger</Link>
+          <Link to="/trial-balance">Trial Balance</Link>
+          <Link to="/income-statement">Income Statement</Link>
+          <Link to="/balance-sheet">Balance Sheet</Link>
+          <Link to="/retained-earnings-statement">Retained Earnings Statement</Link>
+          
           <Link to="">...</Link>
         </div>
 
