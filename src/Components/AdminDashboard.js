@@ -88,7 +88,7 @@ const AdminDashboard = () => {
         </div>
         <div className="navbar-right">
           <span className="username-display">Logged in as: {username}</span> 
-          <Link to="/report">User Report</Link>
+          <Link to="/report">Chart of Accounts</Link>
           <Link to="/update">Update Information</Link>
           <button className="logout-button" title = "Button to Logout of account" onClick={handleLogout}>Logout</button> 
         </div>

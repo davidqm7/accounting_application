@@ -6,7 +6,6 @@ import LoginPage from './Components/LoginPage';
 import ForgotPassword from './Components/ForgotPassword'; 
 import AdminDashboard from './Components/AdminDashboard';
 import UserReport from './Components/UserReport'; 
-import UpdateInformation from './Components/UpdateInformation';
 import SendEmail from './Components/SendEmail';
 import CreateUser from './Components/CreateUser'; 
 import Activation from './Components/Activation';
@@ -48,7 +47,6 @@ const App = () => {
       <Route path="/create-user" element={<CreateUser />} />
       <Route path="/activation" element={<Activation />} />
       <Route path="/report" element={<UserReport />} />
-      <Route path="/update" element={<UpdateInformation />} />
       <Route path="/admin-journalizing" element={<AdminJournalizing />} />
       <Route path="/event-log" element={<EventLog />} />
       <Route path="/details/:uid" element={<Details />} />

@@ -60,7 +60,8 @@ const ManagerDashboard = () => {
         <div className="sidebar">
           <h2>Navigation</h2>
           <Link to="/manager-get-email">Read Messages</Link>
-          <Link to="/manager-user-report">User Report</Link>  
+          <Link to="/event-log">Event Log</Link>
+          <Link to="/manager-user-report">Chart of Accounts</Link>  
           <Link to="/user-journalizing/:entryId">Journalizing</Link>
           <Link to="/manager-journalizing">Journal Entries</Link>
           <Link to="/general-ledger">General Ledger</Link>
