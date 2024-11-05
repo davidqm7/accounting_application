@@ -1,86 +1,72 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs } from "firebase/firestore";
-import { db } from '../firebase';  // Adjust the import path as necessary
-import './SendEmail.css'; // Make sure to import the CSS file
-
-
+import { db } from '../firebase'; // Adjust the import path as necessary
+import './SendEmail.css'; // Ensure the CSS file is properly imported
 
 const SendEmail = () => {
-  const [users, setUsers] = useState([]);
-  const [selectedUserEmail, setSelectedUserEmail] = useState('');
-  const [emailSubject, setEmailSubject] = useState('');
-  const [emailMessage, setEmailMessage] = useState('');
-
-  // Fetch users from Firestore
+  const [emails, setEmails] = useState([]);
+  const [selectedEmail, setSelectedEmail] = useState('');
+  
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchEmails = async () => {
       try {
-        const usersSnapshot = await getDocs(collection(db, 'userRequests')); // Assuming 'users' collection
-        const usersList = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setUsers(usersList);
+        const querySnapshot = await getDocs(collection(db, 'userRequests'));
+        const emailList = querySnapshot.docs.map(doc => doc.data().email);
+        setEmails(emailList);
+        if (emailList.length > 0) setSelectedEmail(emailList[0]); // Set default selection
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error("Error fetching emails: ", error);
       }
     };
-    fetchUsers();
+    
+    fetchEmails();
   }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert(`Email sent to ${selectedUserEmail}! Subject: ${emailSubject}, Message: ${emailMessage}`);
-    // Here, you would implement the actual email sending functionality using your server or a service like SendGrid
-  };
+  // Update form action URL based on selected email
+  const formActionUrl = `https://formsubmit.co/${selectedEmail}`;
 
   return (
     <div className="send-email-container">
       <h1>Admin Dashboard - Send Email</h1>
-      <div className="section">
-        <h2>Send Email to User</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="userEmail">Select User</label>
-            <select 
-              id="userEmail" 
-              name="userEmail" 
-              value={selectedUserEmail}
-              onChange={(e) => setSelectedUserEmail(e.target.value)} 
-              required
-            >
-              <option value="">Select a user</option>
-              {users.map(user => (
-                <option key={user.id} value={user.email}>{user.email}</option>
-              ))}
-            </select>
-          </div>
+      <form action={formActionUrl} method="POST">
+        <label>
+          Name:
+          <input type="text" name="name" required />
+        </label>
 
-          <div className="form-group">
-            <label htmlFor="emailSubject">Email Subject</label>
-            <input 
-              type="text" 
-              id="emailSubject" 
-              name="emailSubject" 
-              value={emailSubject} 
-              onChange={(e) => setEmailSubject(e.target.value)} 
-              required 
-            />
-          </div>
+        <label>
+          Email:
+          <select 
+            name="email" 
+            value={selectedEmail} 
+            onChange={(e) => setSelectedEmail(e.target.value)}
+            required
+          >
+            {emails.map((email, index) => (
+              <option key={index} value={email}>
+                {email}
+              </option>
+            ))}
+          </select>
+        </label>
 
-          <div className="form-group">
-            <label htmlFor="emailMessage">Message</label>
-            <textarea 
-              id="emailMessage" 
-              name="emailMessage" 
-              value={emailMessage} 
-              onChange={(e) => setEmailMessage(e.target.value)} 
-              required
-            ></textarea>
-          </div>
+        <label>
+          Subject:
+          <input type="text" name="subject" required />
+        </label>
 
-          <button type="submit" title = "Sends the email" >Send Email</button>
-        </form>
-      </div>
+        <label>
+          Message:
+          <textarea name="message" rows="5" required />
+        </label>
+
+        <button type="submit">Send</button>
+      </form>
     </div>
   );
 };
 
 export default SendEmail;
+
+
+

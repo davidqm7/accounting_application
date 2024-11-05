@@ -1,0 +1,79 @@
+.admin-journal-approval-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    font-family: Arial, sans-serif;
+    color: #333;
+}
+
+.admin-journal-approval-container h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.journal-entries-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.journal-entries-table th, .journal-entries-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.journal-entries-table th {
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+.journal-entries-table tr:hover {
+    background-color: #f9f9f9;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+}
+
+.approve-button, .reject-button {
+    background-color: grey;
+    color: white;
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-bottom: 5px;
+}
+
+.approve-button:hover {
+    background-color: #28a745;
+}
+
+.reject-button:hover {
+    background-color: #dc3545;
+}
+
+.comment-field {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 5px;
+    font-size: 14px;
+    resize: vertical;
+    min-height: 50px;
+}
+
+.error-message {
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
+    text-align: center;
+}
