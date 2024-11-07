@@ -6,14 +6,34 @@ import './UserJournalizing.css';
 const UserJournalizing = () => {
   const [entryName, setEntryName] = useState('');
   const [sourceDoc, setSourceDoc] = useState(null);
-  const [transactions, setTransactions] = useState([]);
+  const [debits, setDebits] = useState([]);
+  const [credits, setCredits] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showJournalEntries, setShowJournalEntries] = useState(false);
+  const [errorMessages, setErrorMessages] = useState({});
+  const [currentError, setCurrentError] = useState(null);
+  const [showStatusModal, setShowStatusModal] = useState(false);
   const [journalEntries, setJournalEntries] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
+  // Fetch error messages from Firestore
+  useEffect(() => {
+    const fetchErrorMessages = async () => {
+      const errorMessagesCollection = collection(db, 'errorMessages');
+      const errorMessagesSnapshot = await getDocs(errorMessagesCollection);
+      const messages = {};
+      errorMessagesSnapshot.docs.forEach(doc => {
+        messages[doc.id] = doc.data().messageText;
+      });
+      setErrorMessages(messages);
+    };
+
+    fetchErrorMessages();
+  }, []);
+
+  // Fetch account names from Firestore
   useEffect(() => {
     const fetchAccounts = async () => {
       const userAccountsCollection = collection(db, "userAccounts");
@@ -29,76 +49,125 @@ const UserJournalizing = () => {
     fetchAccounts();
   }, []);
 
-  const handleEntryNameChange = (e) => {
-    setEntryName(e.target.value);
+  // Fetch journal entries for the status modal
+  const fetchJournalEntries = async () => {
+    const journalEntriesCollection = collection(db, "journalEntries");
+    const entriesSnapshot = await getDocs(journalEntriesCollection);
+    const entriesList = entriesSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      createdAt: doc.data().createdAt.toDate()
+    }));
+    setJournalEntries(entriesList);
   };
 
-  const handleSourceDocChange = (e) => {
-    setSourceDoc(e.target.files[0]);
-  };
+  const handleEntryNameChange = (e) => setEntryName(e.target.value);
+  const handleSourceDocChange = (e) => setSourceDoc(e.target.files[0]);
 
   const handleReset = () => {
     setEntryName('');
     setSourceDoc(null);
-    setTransactions([]);
+    setDebits([]);
+    setCredits([]);
+    setCurrentError(null);
   };
 
   const handleNewTransaction = () => {
-    setTransactions([...transactions, { accountUid: '', accountName: '', catagory: '', description: '', amount: '' }]);
+    setDebits([{ accountUid: '', accountName: '', catagory: 'debit', description: '', amount: '' }]);
+    setCredits([{ accountUid: '', accountName: '', catagory: 'credit', description: '', amount: '' }]);
   };
 
-  const handleTransactionChange = (index, field, value) => {
-    const updatedTransactions = transactions.map((transaction, i) =>
+  const handleAddDebit = () => setDebits([...debits, { accountUid: '', accountName: '', catagory: 'debit', description: '', amount: '' }]);
+  const handleAddCredit = () => setCredits([...credits, { accountUid: '', accountName: '', catagory: 'credit', description: '', amount: '' }]);
+
+  const handleTransactionChange = (index, field, value, type) => {
+    const updatedTransactions = (type === 'debit' ? debits : credits).map((transaction, i) =>
       i === index ? { ...transaction, [field]: value } : transaction
     );
-    setTransactions(updatedTransactions);
+    type === 'debit' ? setDebits(updatedTransactions) : setCredits(updatedTransactions);
   };
 
-  const handleAccountSelect = (index, accountUid) => {
+  const handleAccountSelect = (index, accountUid, type) => {
     const selectedAccount = accounts.find(account => account.uid === accountUid);
-    const updatedTransactions = transactions.map((transaction, i) =>
+    const updatedTransactions = (type === 'debit' ? debits : credits).map((transaction, i) =>
       i === index ? {
         ...transaction,
         accountUid: accountUid,
         accountName: selectedAccount.name,
-        // Remove this line if you want to allow users to input category manually
-        catagory: transaction.catagory || selectedAccount.catagory
+        catagory: type === 'debit' ? 'debit' : 'credit'
       } : transaction
     );
-    setTransactions(updatedTransactions);
+    type === 'debit' ? setDebits(updatedTransactions) : setCredits(updatedTransactions);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setCurrentError(null);
 
-    if (!entryName || !transactions.length) {
-      alert('Please fill out all fields.');
+    // Validation: Check for entry name
+    if (!entryName) {
+      setCurrentError('missingEntryName');
       setIsSubmitting(false);
       return;
     }
 
+    if (debits.length === 0) {
+      setCurrentError('missingDebit');
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (credits.length === 0) {
+      setCurrentError('missingCredit');
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Validate that each debit and credit has an account and a positive amount
+    for (const transaction of debits) {
+      if (!transaction.accountUid) {
+        setCurrentError('missingDebitAccount');
+        setIsSubmitting(false);
+        return;
+      }
+      if (!transaction.amount || transaction.amount <= 0) {
+        setCurrentError('positiveDebitAmount');
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
+    for (const transaction of credits) {
+      if (!transaction.accountUid) {
+        setCurrentError('missingCreditAccount');
+        setIsSubmitting(false);
+        return;
+      }
+      if (!transaction.amount || transaction.amount <= 0) {
+        setCurrentError('positiveCreditAmount');
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
+    // Check if total debits equal total credits
+    const totalDebits = debits.reduce((sum, debit) => sum + parseFloat(debit.amount || 0), 0);
+    const totalCredits = credits.reduce((sum, credit) => sum + parseFloat(credit.amount || 0), 0);
+
+    if (totalDebits !== totalCredits) {
+      setCurrentError('debitCreditMismatch');
+      setIsSubmitting(false);
+      return;
+    }
+
+    // If all validations pass, proceed with submission
     try {
-      // Create the transactionArray string and sort by category
-      const transactionArray = transactions.map(transaction =>
-        `${transaction.accountName},${transaction.catagory},${transaction.description},${transaction.amount}`
-      ).sort((a, b) => {
-        const categoryA = a.split(',')[1].toLowerCase();
-        const categoryB = b.split(',')[1].toLowerCase();
+      const transactionArray = [
+        ...debits.map(transaction => `${transaction.accountName},${transaction.catagory},${transaction.description},${transaction.amount}`),
+        ...credits.map(transaction => `${transaction.accountName},${transaction.catagory},${transaction.description},${transaction.amount}`)
+      ];
 
-        // Define priority for both singular and plural forms
-        const priority = {
-          debit: 1, debits: 1,
-          asset: 2, assets: 2,
-          credit: 3, credits: 3,
-          liability: 4, liabilities: 4
-        };
-
-        // Sort based on priority; unknown categories default to a lower priority
-        return (priority[categoryA] || 5) - (priority[categoryB] || 5);
-      });
-
-      // Add journal entry to Firestore
       await addDoc(collection(db, 'journalEntries'), {
         journalEntryName: entryName,
         sourceDoc: sourceDoc ? sourceDoc.name : '',
@@ -117,213 +186,144 @@ const UserJournalizing = () => {
     setIsSubmitting(false);
   };
 
-  const handleDisplayJournalEntries = async () => {
-    const journalEntriesCollection = collection(db, "journalEntries");
-    const journalEntriesSnapshot = await getDocs(journalEntriesCollection);
-    const entries = journalEntriesSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    })).sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
-    setJournalEntries(entries);
-    setShowJournalEntries(true);
+  const openStatusModal = () => {
+    fetchJournalEntries(); // Fetch entries when opening the modal
+    setShowStatusModal(true);
   };
 
-  const handleBack = () => {
-    setShowJournalEntries(false);
+  const closeStatusModal = () => {
+    setShowStatusModal(false);
+    setStatusFilter('');
+    setStartDate('');
+    setEndDate('');
   };
 
   const filteredEntries = journalEntries.filter(entry => {
     const matchesStatus = !statusFilter || entry.status === statusFilter;
-    const matchesSearch = entry.transactionArray.some(transaction => {
-      const [account, , , amount] = transaction.split(',');
-      return (
-        account.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        amount.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        entry.createdAt.toDate().toLocaleDateString().includes(searchQuery)
-      );
-    });
-    return matchesStatus && matchesSearch;
+    const matchesDate = (!startDate || entry.createdAt >= new Date(startDate)) && (!endDate || entry.createdAt <= new Date(endDate));
+    return matchesStatus && matchesDate;
   });
 
   return (
     <div className="user-journalizing-container">
-      {showJournalEntries ? (
-        <div>
-          <button onClick={handleBack}>Back</button>
-          <h1>Journal Entries</h1>
+      <h1>Journalizing</h1>
+      <form onSubmit={handleSubmit}>
+        {currentError && (
+          <p style={{ color: 'red', fontWeight: 'bold' }}>
+            {errorMessages[currentError]}
+          </p>
+        )}
 
-          {/* Search bar and Status Filter */}
-          <input
-            type="text"
-            placeholder="Search by Account Name, Amount, or Date"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <div>
-            <label>
-              <input
-                type="radio"
-                value=""
-                checked={statusFilter === ""}
-                onChange={() => setStatusFilter('')}
-              />
-              All
-            </label>
-            <label>
-              <input
-                type="radio"
-                value="pending"
-                checked={statusFilter === "pending"}
-                onChange={() => setStatusFilter('pending')}
-              />
-              Pending
-            </label>
-            <label>
-              <input
-                type="radio"
-                value="approved"
-                checked={statusFilter === "approved"}
-                onChange={() => setStatusFilter('approved')}
-              />
-              Approved
-            </label>
-            <label>
-              <input
-                type="radio"
-                value="rejected"
-                checked={statusFilter === "rejected"}
-                onChange={() => setStatusFilter('rejected')}
-              />
-              Rejected
-            </label>
-          </div>
+        <label htmlFor="entryName">Entry Name:</label>
+        <input
+          type="text"
+          id="entryName"
+          name="entryName"
+          value={entryName}
+          onChange={handleEntryNameChange}
+          required
+        />
+        <br /><br />
 
-          {/* Journal Entries Table */}
-          <table>
-            <thead>
-              <tr>
-                <th>Journal Entry Name</th>
-                <th>Source Document</th>
-                <th>Status</th>
-                <th>Transactions</th>
-                <th>Created At</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredEntries.map((entry) => (
-                <tr key={entry.id}>
-                  <td>{entry.journalEntryName}</td>
-                  <td>
-                    {entry.sourceDoc && (
-                      <a href={`/${entry.sourceDoc}`} download>
-                        {entry.sourceDoc}
-                      </a>
-                    )}
-                  </td>
-                  <td>{entry.status}</td>
-                  <td>
-                    {entry.transactionArray.map((transaction, index) => {
-                      const [account, catagory, description, amount] = transaction.split(',');
-                      return (
-                        <div key={index}>
-                          Account: {account} | Category: {catagory} | Description: {description} | Amount: {amount}
-                        </div>
-                      );
-                    })}
-                  </td>
-                  <td>{entry.createdAt.toDate().toLocaleString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <div>
-          <button onClick={handleDisplayJournalEntries}>Display Journal Entries</button>
-          <h1>Journalizing</h1>
-          <form onSubmit={handleSubmit}>
-            {/* Entry Name */}
-            <label htmlFor="entryName">Entry Name:</label>
-            <input
-              type="text"
-              id="entryName"
-              name="entryName"
-              value={entryName}
-              onChange={handleEntryNameChange}
-              required
-            />
-            <br /><br />
+        <label htmlFor="sourceDoc">Source Doc (PDF, Word, CSV, JPG, PNG):</label>
+        <input
+          type="file"
+          id="sourceDoc"
+          name="sourceDoc"
+          accept=".pdf,.doc,.docx,.csv,.jpg,.jpeg,.png"
+          onChange={handleSourceDocChange}
+        />
+        <br /><br />
 
-            {/* Source Doc */}
-            <label htmlFor="sourceDoc">Source Doc (PDF, Word, CSV, JPG, PNG):</label>
-            <input
-              type="file"
-              id="sourceDoc"
-              name="sourceDoc"
-              accept=".pdf,.doc,.docx,.csv,.jpg,.jpeg,.png"
-              onChange={handleSourceDocChange}
-            />
-            <br /><br />
+        <button type="button" onClick={handleNewTransaction}>New Transaction</button>
+        <br /><br />
 
-            {/* New Transaction Button */}
-            <button type="button" onClick={handleNewTransaction}>New Transaction</button>
-            <br /><br />
-
-            {/* Transactions */}
-            {transactions.map((transaction, index) => (
+        {/* Render Debits */}
+        {debits.length > 0 && (
+          <>
+            <h2>Debits</h2>
+            {debits.map((debit, index) => (
               <div key={index} className="transaction">
-                <label htmlFor={`account-${index}`}>Account:</label>
-                <select
-                  id={`account-${index}`}
-                  value={transaction.accountUid}
-                  onChange={(e) => handleAccountSelect(index, e.target.value)}
-                  required
-                >
+                <label>Account:</label>
+                <select onChange={(e) => handleAccountSelect(index, e.target.value, 'debit')} required>
                   <option value="">Select Account</option>
-                  {accounts.map((account) => (
-                    <option key={account.uid} value={account.uid}>{account.name}</option>
-                  ))}
+                  {accounts.map(account => <option key={account.uid} value={account.uid}>{account.name}</option>)}
                 </select>
-                <br /><br />
-
-                <label htmlFor={`catagory-${index}`}>Category:</label>
-                <input
-                  type="text"
-                  id={`catagory-${index}`}
-                  value={transaction.catagory}
-                  onChange={(e) => handleTransactionChange(index, 'catagory', e.target.value)} // Allow category input
-                  required
-                />
-                <br /><br />
-
-                <label htmlFor={`description-${index}`}>Description:</label>
-                <input
-                  type="text"
-                  id={`description-${index}`}
-                  value={transaction.description}
-                  onChange={(e) => handleTransactionChange(index, 'description', e.target.value)}
-                  required
-                />
-                <br /><br />
-
-                <label htmlFor={`amount-${index}`}>Amount:</label>
-                <input
-                  type="text"
-                  id={`amount-${index}`}
-                  value={transaction.amount}
-                  onChange={(e) => handleTransactionChange(index, 'amount', e.target.value)}
-                  required
-                />
-                <br /><br />
+                <input type="text" placeholder="Description" value={debit.description} onChange={(e) => handleTransactionChange(index, 'description', e.target.value, 'debit')} required />
+                <input type="number" placeholder="Amount" value={debit.amount} onChange={(e) => handleTransactionChange(index, 'amount', e.target.value, 'debit')} required />
               </div>
             ))}
+            <button type="button" onClick={handleAddDebit}>Add Debit</button>
+          </>
+        )}
 
-            {/* Buttons */}
-            <button type="reset" onClick={handleReset} disabled={isSubmitting}>Reset</button>
-            <button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Submitting...' : 'Submit'}
-            </button>
-          </form>
+        {/* Render Credits */}
+        {credits.length > 0 && (
+          <>
+            <h2>Credits</h2>
+            {credits.map((credit, index) => (
+              <div key={index} className="transaction">
+                <label>Account:</label>
+                <select onChange={(e) => handleAccountSelect(index, e.target.value, 'credit')} required>
+                  <option value="">Select Account</option>
+                  {accounts.map(account => <option key={account.uid} value={account.uid}>{account.name}</option>)}
+                </select>
+                <input type="text" placeholder="Description" value={credit.description} onChange={(e) => handleTransactionChange(index, 'description', e.target.value, 'credit')} required />
+                <input type="number" placeholder="Amount" value={credit.amount} onChange={(e) => handleTransactionChange(index, 'amount', e.target.value, 'credit')} required />
+              </div>
+            ))}
+            <button type="button" onClick={handleAddCredit}>Add Credit</button>
+          </>
+        )}
+
+        <br />
+        <button type="reset" onClick={handleReset} disabled={isSubmitting}>Reset</button>
+        <button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Submitting...' : 'Submit'}</button>
+      </form>
+
+      <button className="status-button" onClick={openStatusModal}>Status</button>
+
+      {showStatusModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>Journal Entries Status</h2>
+            <button className="close-button" onClick={closeStatusModal}>Close</button>
+
+            <div className="filter-section">
+              <label>Status:</label>
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                <option value="">All</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+              </select>
+
+              <label>Start Date:</label>
+              <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+
+              <label>End Date:</label>
+              <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+            </div>
+
+            <table className="status-table">
+              <thead>
+                <tr>
+                  <th>Entry Name</th>
+                  <th>Status</th>
+                  <th>Date Created</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredEntries.map(entry => (
+                  <tr key={entry.id}>
+                    <td>{entry.journalEntryName}</td>
+                    <td>{entry.status}</td>
+                    <td>{entry.createdAt.toLocaleDateString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>
@@ -331,10 +331,3 @@ const UserJournalizing = () => {
 };
 
 export default UserJournalizing;
-
-
-
-
-
-
-

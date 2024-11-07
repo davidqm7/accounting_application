@@ -6,7 +6,6 @@ import LoginPage from './Components/LoginPage';
 import ForgotPassword from './Components/ForgotPassword'; 
 import AdminDashboard from './Components/AdminDashboard';
 import UserReport from './Components/UserReport'; 
-import UpdateInformation from './Components/UpdateInformation';
 import SendEmail from './Components/SendEmail';
 import CreateUser from './Components/CreateUser'; 
 import Activation from './Components/Activation';
@@ -23,8 +22,12 @@ import AdminJournalizing from './Components/AdminJournalizing';
 import EventLog from './Components/EventLog';
 import Details from './Components/Details'; 
 import Edits from './Components/Edits'; 
-import GeneralLedger from './Components/GeneralLedger'; 
-
+import GeneralLedger from './Components/GeneralLedger';
+import JournalEntry from './Components/JournalEntry';
+import TrialBalance from './Components/TrialBalance';
+import IncomeStatement from './Components/IncomeStatement';
+import BalanceSheet from './Components/BalanceSheet';
+import RetainedEarningsStatement from './Components/RetainedEarningsStatement';
 
 const App = () => {
 
@@ -34,32 +37,38 @@ const App = () => {
       <Routes>
         
 
-     <Route path="/" element={<LoginPage />} /> 
-     <Route path="/forgot-password" element={<ForgotPassword/>}/>
-     <Route path="/reset-password" element={<ResetPassword />} />
-     <Route path="/register" element={<RegisterPage />} />   
+      <Route path="/" element={<LoginPage />} /> 
+      <Route path="/forgot-password" element={<ForgotPassword/>}/>
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/register" element={<RegisterPage />} />   
         
-     <Route path="/admin" element={<AdminDashboard />} />
-     <Route path="/email" element={<SendEmail />} />
+      <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/email" element={<SendEmail />} />
       <Route path="/create-user" element={<CreateUser />} />
       <Route path="/activation" element={<Activation />} />
-       <Route path="/report" element={<UserReport />} />
-       <Route path="/update" element={<UpdateInformation />} />
-       <Route path="/admin-journalizing" element={<AdminJournalizing />} />
-       <Route path="/event-log" element={<EventLog />} />
-       <Route path="/details/:uid" element={<Details />} />
-       <Route path="/edits/:uid" element={<Edits />} />
+      <Route path="/report" element={<UserReport />} />
+      <Route path="/admin-journalizing" element={<AdminJournalizing />} />
+      <Route path="/event-log" element={<EventLog />} />
+      <Route path="/details/:uid" element={<Details />} />
+      <Route path="/edits/:uid" element={<Edits />} />
 
       <Route path="/manager" element={<ManagerDashboard />} />
       <Route path="/manager-get-email" element={<ManagerGetEmail />} />
       <Route path="/manager-user-report" element={<ManagerUserReport />} />
       <Route path="/manager-journalizing" element={<ManagerJournalizing />} />
+      <Route path="/trial-balance" element={<TrialBalance />} />
+      <Route path="/income-statement" element={<IncomeStatement />} />
+      <Route path="/balance-sheet" element={<BalanceSheet />} />
+      <Route path="/retained-earnings-statement" element={<RetainedEarningsStatement />} />
 
-       <Route path="/user-dashboard" element={<RegularDashboard />} />
-       <Route path="/reg-get-email" element={<RegularGetEmail />} />
-       <Route path="/regular-user-report" element={<RegularUserReport />} />
-       <Route path="/user-journalizing" element={<UserJournalizing />} />
-       <Route path="/general-ledger" element={<GeneralLedger />} />
+
+
+      <Route path="/user-dashboard" element={<RegularDashboard />} />
+      <Route path="/reg-get-email" element={<RegularGetEmail />} />
+      <Route path="/regular-user-report" element={<RegularUserReport />} />
+      <Route path="/user-journalizing/:entryId" element={<UserJournalizing />} />
+      <Route path="/general-ledger" element={<GeneralLedger />} />
+      <Route path="/journal-entry" element={<JournalEntry />} />
 
 
     </Routes>
