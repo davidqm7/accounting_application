@@ -11,7 +11,25 @@ const TrialBalance = () => {
   const [endDate, setEndDate] = useState('');
   const [trialBalanceData, setTrialBalanceData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [emails, setEmails] = useState([]);
+  const [selectedEmail, setSelectedEmail] = useState('');
   const reportRef = useRef();
+
+  // Fetch emails from userRequests collection
+  useEffect(() => {
+    const fetchEmails = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'userRequests'));
+        const emailList = querySnapshot.docs.map(doc => doc.data().email);
+        setEmails(emailList);
+        if (emailList.length > 0) setSelectedEmail(emailList[0]); // Set default selection
+      } catch (error) {
+        console.error("Error fetching emails: ", error);
+      }
+    };
+    
+    fetchEmails();
+  }, []);
 
   // Fetch trial balance data based on date range
   const fetchTrialBalanceData = async () => {
@@ -81,6 +99,9 @@ const TrialBalance = () => {
     fetchTrialBalanceData();
   }, [startDate, endDate]);
 
+  // Update form action URL based on selected email
+  const formActionUrl = `https://formsubmit.co/${selectedEmail}`;
+
   return (
     <div className="trial-balance-container">
       <h1>Trial Balance</h1>
@@ -128,10 +149,56 @@ const TrialBalance = () => {
       <div className="actions">
         <button onClick={handleSaveAsPDF}>Save as PDF</button>
         <button onClick={handlePrint}>Print</button>
-        {/* Add email functionality when completed */}
+      </div>
+
+      {/* Email form section */}
+      <div className="send-email-container">
+        <h2>Send Trial Balance via Email</h2>
+        <form action={formActionUrl} method="POST">
+          <label>
+            Name:
+            <input type="text" name="name" required />
+          </label>
+
+          <label>
+            Email:
+            <select 
+              name="email" 
+              value={selectedEmail} 
+              onChange={(e) => setSelectedEmail(e.target.value)}
+              required
+            >
+              {emails.map((email, index) => (
+                <option key={index} value={email}>
+                  {email}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label>
+            Subject:
+            <input type="text" name="subject" value="Trial Balance Report" readOnly />
+          </label>
+
+          <label>
+            Message:
+            <textarea name="message" rows="5" required>
+              Please find the attached trial balance report.
+            </textarea>
+          </label>
+
+          <label>
+            Trial Balance:
+            <input type="file" name="attachment"></input>
+          </label>
+
+          <button type="submit">Send</button>
+        </form>
       </div>
     </div>
   );
 };
 
 export default TrialBalance;
+
