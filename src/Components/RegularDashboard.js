@@ -55,6 +55,7 @@ const RegularDashboard = () => {
       <div className="container">
         <div className="sidebar">
           <h2>Navigation</h2>
+          <Link to="/email">Email</Link>
           <Link to="/reg-get-email">Read Messages</Link>
           <Link to="/event-log">Event Log</Link>
           <Link to="/regular-user-report">Chart of Accounts</Link> 

@@ -18,7 +18,6 @@ import ManagerUserReport from './Components/ManagerUserReport';
 import RegularUserReport from './Components/RegularUserReport';
 import UserJournalizing from './Components/UserJournalizing';
 import ManagerJournalizing from './Components/ManagerJournalizing';
-import AdminJournalizing from './Components/AdminJournalizing';
 import EventLog from './Components/EventLog';
 import Details from './Components/Details'; 
 import Edits from './Components/Edits'; 
@@ -47,7 +46,6 @@ const App = () => {
       <Route path="/create-user" element={<CreateUser />} />
       <Route path="/activation" element={<Activation />} />
       <Route path="/report" element={<UserReport />} />
-      <Route path="/admin-journalizing" element={<AdminJournalizing />} />
       <Route path="/event-log" element={<EventLog />} />
       <Route path="/details/:uid" element={<Details />} />
       <Route path="/edits/:uid" element={<Edits />} />

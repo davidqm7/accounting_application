@@ -27,7 +27,7 @@ const SendEmail = () => {
 
   return (
     <div className="send-email-container">
-      <h1>Admin Dashboard - Send Email</h1>
+      <h1>Send Email</h1>
       <form action={formActionUrl} method="POST">
         <label>
           Name:
