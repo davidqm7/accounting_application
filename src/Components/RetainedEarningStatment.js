@@ -4,6 +4,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import './TrialBalance.css';
 
 
 const app = initializeApp(firebaseConfig);
