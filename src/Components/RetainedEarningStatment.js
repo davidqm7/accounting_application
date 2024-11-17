@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from '../firebase';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { collection, getDocs } from "firebase/firestore";
-import { db } from '../firebase'; // Adjust this path to where your Firebase config is
+import { useReactToPrint } from 'react-to-print';
+import './TrialBalance.css';
+
 
 const EarningsStatement = () => {
   const [startDate, setStartDate] = useState('');
@@ -49,14 +53,14 @@ const EarningsStatement = () => {
         ['Ending Retained Earnings', `$${earningsData.retainedEarnings.toLocaleString()}`],
       ],
     });
-    doc.save('EarningsStatement.pdf');
+    doc.save('RetainedEarningsStatement.pdf');
   };
 
   return (
     <div className="earnings-statement-container">
       <h1>Earnings Statement</h1>
       
-      {/* Date range input */}
+      {}
       <form>
         <label>
           Start Date:
@@ -82,7 +86,7 @@ const EarningsStatement = () => {
         </button>
       </form>
 
-      {/* Display earnings statement if available */}
+      {}
       {earningsData && (
         <div className="report">
           <h2>Earnings Statement</h2>
@@ -174,4 +178,4 @@ const EmailSelector = () => {
   );
 };
 
-export default EarningsStatement;
+export default RetainedEarningsStatement;
