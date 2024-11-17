@@ -1,19 +1,17 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from '../firebase';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { useReactToPrint } from 'react-to-print';
 import './TrialBalance.css';
 
-
 const EarningsStatement = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [earningsData, setEarningsData] = useState(null);
-
-
+  const reportRef = useRef(); 
   const generateEarningsStatement = () => {
     if (!startDate) {
       alert('Please select a start date.');
@@ -35,7 +33,6 @@ const EarningsStatement = () => {
     });
   };
 
-  // Export the earnings statement to PDF
   const exportToPDF = () => {
     if (!earningsData) {
       alert('Generate an Earnings Statement first.');
@@ -56,11 +53,15 @@ const EarningsStatement = () => {
     doc.save('RetainedEarningsStatement.pdf');
   };
 
+  const handlePrint = useReactToPrint({
+    content: () => reportRef.current,
+    documentTitle: 'Earnings Statement',
+  });
+
   return (
     <div className="earnings-statement-container">
       <h1>Earnings Statement</h1>
       
-      {}
       <form>
         <label>
           Start Date:
@@ -86,9 +87,8 @@ const EarningsStatement = () => {
         </button>
       </form>
 
-      {}
       {earningsData && (
-        <div className="report">
+        <div className="report" ref={reportRef}>
           <h2>Earnings Statement</h2>
           <p>
             <strong>For the Period:</strong> {earningsData.startDate} to {earningsData.endDate}
@@ -108,8 +108,12 @@ const EarningsStatement = () => {
             </li>
           </ul>
           <button onClick={exportToPDF}>Export to PDF</button>
+          <button onClick={handlePrint}>Print</button>
         </div>
       )}
+
+      {/* Include Email Selector */}
+      <EmailSelector />
     </div>
   );
 };
@@ -118,7 +122,6 @@ const EmailSelector = () => {
   const [emails, setEmails] = useState([]);
   const [selectedEmail, setSelectedEmail] = useState('');
 
-  // Fetch emails from the 'userRequests' collection
   useEffect(() => {
     const fetchEmails = async () => {
       try {
@@ -134,7 +137,6 @@ const EmailSelector = () => {
     fetchEmails();
   }, []);
 
-  // Update form action URL based on selected email
   const formActionUrl = `https://formsubmit.co/${selectedEmail}`;
 
   return (
@@ -145,7 +147,6 @@ const EmailSelector = () => {
           Name:
           <input type="text" name="name" required />
         </label>
-
         <label>
           Email:
           <select 
@@ -161,21 +162,18 @@ const EmailSelector = () => {
             ))}
           </select>
         </label>
-
         <label>
           Subject:
           <input type="text" name="subject" placeholder="Subject" required />
         </label>
-
         <label>
           Message:
           <textarea name="message" rows="5" placeholder="Your message here..." required />
         </label>
-
         <button type="submit">Send</button>
       </form>
     </div>
   );
 };
 
-export default RetainedEarningsStatement;
+export default EarningsStatement;
