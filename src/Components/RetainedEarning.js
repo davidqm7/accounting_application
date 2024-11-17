@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import '.TrailBalance'; 
+import './TrialBalance.css';
 
 import EmailSelector from './EmailSelector'; // Import EmailSelector component
 
