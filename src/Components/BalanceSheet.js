@@ -1,143 +1,121 @@
-import React, { useState, useEffect } from 'react';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../firebase'; 
+import React, { useState, useEffect, useRef } from 'react';
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from '../firebase';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { useReactToPrint } from 'react-to-print';
 import './TrialBalance.css';
+
 
 const BalanceSheet = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [balanceSheetData, setBalanceSheetData] = useState({
-    assets: 0,
-    liabilities: 0,
-    equity: 0,
-  });
+  const [balanceSheetData, setBalanceSheetData] = useState({ assets: [], liabilities: [] });
   const [loading, setLoading] = useState(false);
+  const reportRef = useRef();
+
   const [emails, setEmails] = useState([]);
   const [selectedEmail, setSelectedEmail] = useState('');
 
-
+  // Fetch balance sheet data
   const fetchBalanceSheetData = async () => {
     setLoading(true);
-
-   
-    setBalanceSheetData({
-      assets: 0,
-      liabilities: 0,
-      equity: 0,
-    });
-
     try {
-      const transactionsCollection = collection(db, 'journalEntries');
+      const transactionsCollection = collection(db, "journalEntries");
       let q;
 
       if (startDate && endDate) {
-        q = query(
-          transactionsCollection,
-          where('createdAt', '>=', new Date(startDate)),
-          where('createdAt', '<=', new Date(endDate))
+        q = query(transactionsCollection,
+          where("createdAt", ">=", new Date(startDate)),
+          where("createdAt", "<=", new Date(endDate))
         );
       } else {
-        setLoading(false);
-        return; 
+        q = transactionsCollection;
       }
 
       const transactionsSnapshot = await getDocs(q);
       const transactions = transactionsSnapshot.docs.map(doc => doc.data());
 
-     
-      if (transactions.length === 0) {
-        setLoading(false);
-        return; 
-      }
-
-      const balanceData = { assets: 0, liabilities: 0, equity: 0 };
+      // Group transactions into Assets (debit) and Liabilities (credit)
+      const assets = [];
+      const liabilities = [];
 
       transactions.forEach(transaction => {
         transaction.transactionArray.forEach(item => {
-          const [accountName, category, , amount] = item.split(',');
+          const [accountName, type, , amount] = item.split(',');
           const amountNumber = parseFloat(amount);
-          if (category.toLowerCase() === 'debit') {
-            if (accountName.toLowerCase().includes('asset')) {
-              balanceData.assets += amountNumber;
-            } else if (accountName.toLowerCase().includes('liability')) {
-              balanceData.liabilities += amountNumber;
-            } else if (accountName.toLowerCase().includes('equity')) {
-              balanceData.equity += amountNumber;
-            }
-          } else if (category.toLowerCase() === 'credit') {
-            if (accountName.toLowerCase().includes('asset')) {
-              balanceData.assets -= amountNumber;
-            } else if (accountName.toLowerCase().includes('liability')) {
-              balanceData.liabilities -= amountNumber;
-            } else if (accountName.toLowerCase().includes('equity')) {
-              balanceData.equity -= amountNumber;
-            }
+
+          if (type.toLowerCase() === 'debit') {
+            assets.push({ account: accountName, amount: amountNumber });
+          } else if (type.toLowerCase() === 'credit') {
+            liabilities.push({ account: accountName, amount: amountNumber });
           }
         });
       });
 
-      setBalanceSheetData(balanceData);
+      setBalanceSheetData({
+        assets,
+        liabilities
+      });
     } catch (error) {
-      console.error('Error fetching balance sheet data:', error);
+      console.error("Error fetching balance sheet data:", error);
     }
-
     setLoading(false);
   };
 
-  
+  // Calculate total for a given array of transactions
+  const calculateTotal = (transactions) => {
+    return transactions.reduce((total, transaction) => total + transaction.amount, 0).toFixed(2);
+  };
+
+  // Generate PDF of the balance sheet
   const handleSaveAsPDF = () => {
     const doc = new jsPDF();
-    doc.text('Balance Sheet', 14, 10);
-
+    doc.text("Balance Sheet", 14, 10);
     doc.autoTable({
       head: [['Account', 'Amount']],
       body: [
-        ['Assets', balanceSheetData.assets.toFixed(2)],
-        ['Liabilities', balanceSheetData.liabilities.toFixed(2)],
-        ['Equity', balanceSheetData.equity.toFixed(2)],
-      ],
+        ...balanceSheetData.assets.map(data => [data.account, data.amount.toFixed(2)]),
+        [{ content: 'Total Assets', colSpan: 1 }, calculateTotal(balanceSheetData.assets)],
+        ...balanceSheetData.liabilities.map(data => [data.account, data.amount.toFixed(2)]),
+        [{ content: 'Total Liabilities', colSpan: 1 }, calculateTotal(balanceSheetData.liabilities)],
+      ]
     });
-
     doc.save('Balance_Sheet.pdf');
   };
 
+  // Print the balance sheet
+  const handlePrint = useReactToPrint({
+    content: () => reportRef.current,
+    documentTitle: 'Balance_Sheet',
+  });
+
+    // Fetch emails from 'userRequests' collection
+    useEffect(() => {
+      const fetchEmails = async () => {
+        try {
+          const querySnapshot = await getDocs(collection(db, 'userRequests'));
+          const emailList = querySnapshot.docs.map(doc => doc.data().email);
+          setEmails(emailList);
+          if (emailList.length > 0) setSelectedEmail(emailList[0]); // Set default selection
+        } catch (error) {
+          console.error("Error fetching emails: ", error);
+        }
+      };
   
-  const handlePrint = () => {
-    const printContent = document.getElementById('balance-sheet-printable');
-    const printWindow = window.open('', '', 'width=800,height=600');
-    printWindow.document.write('<html><head><title>Balance Sheet</title></head><body>');
-    printWindow.document.write(printContent.innerHTML);
-    printWindow.document.write('</body></html>');
-    printWindow.document.close();
-    printWindow.print();
-  };
+      fetchEmails();
+    }, []);
 
-  // Fetch emails from 'userRequests' collection
   useEffect(() => {
-    const fetchEmails = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, 'userRequests'));
-        const emailList = querySnapshot.docs.map(doc => doc.data().email);
-        setEmails(emailList);
-        if (emailList.length > 0) setSelectedEmail(emailList[0]); // Set default selection
-      } catch (error) {
-        console.error("Error fetching emails: ", error);
-      }
-    };
+    fetchBalanceSheetData();
+  }, [startDate, endDate]);
 
-    fetchEmails();
-  }, []);
-
-  // Update form action URL based on selected email
-  const formActionUrl = `https://formsubmit.co/${selectedEmail}`;
+    // Update form action URL based on selected email
+    const formActionUrl = `https://formsubmit.co/${selectedEmail}`;
 
   return (
     <div className="balance-sheet-container">
       <h1>Balance Sheet</h1>
-
-      {/* Balance Sheet Filters and Data */}
       <div className="filter-section">
         <label>Start Date:</label>
         <input
@@ -157,8 +135,8 @@ const BalanceSheet = () => {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <div id="balance-sheet-printable" className="balance-sheet-view">
-          <h2>Balance Sheet Overview</h2>
+        <div ref={reportRef}>
+          <h2>Assets</h2>
           <table className="balance-sheet-table">
             <thead>
               <tr>
@@ -167,17 +145,37 @@ const BalanceSheet = () => {
               </tr>
             </thead>
             <tbody>
+              {balanceSheetData.assets.map((data, index) => (
+                <tr key={index}>
+                  <td>{data.account}</td>
+                  <td>{data.amount.toFixed(2)}</td>
+                </tr>
+              ))}
               <tr>
-                <td>Assets</td>
-                <td>{balanceSheetData.assets.toFixed(2)}</td>
+                <td><strong>Total Assets</strong></td>
+                <td><strong>{calculateTotal(balanceSheetData.assets)}</strong></td>
               </tr>
+            </tbody>
+          </table>
+
+          <h2>Liabilities</h2>
+          <table className="balance-sheet-table">
+            <thead>
               <tr>
-                <td>Liabilities</td>
-                <td>{balanceSheetData.liabilities.toFixed(2)}</td>
+                <th>Account</th>
+                <th>Amount</th>
               </tr>
+            </thead>
+            <tbody>
+              {balanceSheetData.liabilities.map((data, index) => (
+                <tr key={index}>
+                  <td>{data.account}</td>
+                  <td>{data.amount.toFixed(2)}</td>
+                </tr>
+              ))}
               <tr>
-                <td>Equity</td>
-                <td>{balanceSheetData.equity.toFixed(2)}</td>
+                <td><strong>Total Liabilities</strong></td>
+                <td><strong>{calculateTotal(balanceSheetData.liabilities)}</strong></td>
               </tr>
             </tbody>
           </table>
@@ -188,9 +186,9 @@ const BalanceSheet = () => {
         <button onClick={handleSaveAsPDF}>Save as PDF</button>
         <button onClick={handlePrint}>Print</button>
       </div>
-
-      {/* Email Selector Form */}
-      <div className="send-email-container">
+      
+            {/* Email Selector Form */}
+            <div className="send-email-container">
         <h2>Send Email</h2>
         <form action={formActionUrl} method="POST">
           <label>
@@ -232,4 +230,3 @@ const BalanceSheet = () => {
 };
 
 export default BalanceSheet;
-

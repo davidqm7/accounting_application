@@ -26,7 +26,7 @@ import JournalEntry from './Components/JournalEntry';
 import TrialBalance from './Components/TrialBalance';
 import IncomeStatement from './Components/IncomeStatement';
 import BalanceSheet from './Components/BalanceSheet';
-import RetainedEarningsStatement from './Components/RetainedEarningsStatement';
+import EarningsStatement from './Components/EarningStatement';
 
 const App = () => {
 
@@ -57,7 +57,7 @@ const App = () => {
       <Route path="/trial-balance" element={<TrialBalance />} />
       <Route path="/income-statement" element={<IncomeStatement />} />
       <Route path="/balance-sheet" element={<BalanceSheet />} />
-      <Route path="/retained-earnings-statement" element={<RetainedEarningsStatement />} />
+      <Route path="/retained-earnings-statement" element={<EarningsStatement />} />
 
 
 
