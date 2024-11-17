@@ -4,14 +4,14 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
-import './TrialBalance.css';
+import './App.css'; 
 
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 
-const EarningsStatement = () => {
+const RetainedEarningStatement = () => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [earningsData, setEarningsData] = useState(null);
@@ -177,11 +177,11 @@ const EmailSelector = () => {
   );
 };
 
-
+// Main App Component
 const App = () => {
     return (
         <div className="app-container">
-            <EarningsStatement />
+            <RetainedEarningStatement />
             <hr />
             <EmailSelector />
         </div>
@@ -195,3 +195,4 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
+export default RetainedEarningStatement;
