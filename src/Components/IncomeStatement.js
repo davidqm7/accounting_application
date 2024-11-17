@@ -26,6 +26,7 @@ const IncomeStatement = () => {
       const fetchEmails = async () => {
         try {
           const querySnapshot = await getDocs(collection(db, 'userRequests'));
+
           const emailList = querySnapshot.docs
             .map(doc => doc.data().email)
             .filter(email => email);
@@ -200,7 +201,7 @@ const IncomeStatement = () => {
             </label>
   
             <label>
-              Trial Balance:
+              Income Statement:
               <input type="file" name="attachment"></input>
             </label>
   
