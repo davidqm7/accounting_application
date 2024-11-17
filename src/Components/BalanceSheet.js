@@ -3,7 +3,7 @@ import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../firebase'; // Your Firebase configuration
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-
+import './TrialBalance.css';
 const BalanceSheet = () => {
  
   const [startDate, setStartDate] = useState('');
