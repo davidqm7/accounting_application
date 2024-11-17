@@ -1,23 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../firebase'; // Your Firebase configuration
+import { db } from '../firebase'; 
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import './TrialBalance.css';
+
 const BalanceSheet = () => {
- 
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [balanceSheetData, setBalanceSheetData] = useState({});
+  const [balanceSheetData, setBalanceSheetData] = useState({
+    assets: 0,
+    liabilities: 0,
+    equity: 0,
+  });
   const [loading, setLoading] = useState(false);
-
-
   const [emails, setEmails] = useState([]);
   const [selectedEmail, setSelectedEmail] = useState('');
 
- 
+
   const fetchBalanceSheetData = async () => {
     setLoading(true);
+
+   
+    setBalanceSheetData({
+      assets: 0,
+      liabilities: 0,
+      equity: 0,
+    });
+
     try {
       const transactionsCollection = collection(db, 'journalEntries');
       let q;
@@ -29,13 +39,19 @@ const BalanceSheet = () => {
           where('createdAt', '<=', new Date(endDate))
         );
       } else {
-        q = transactionsCollection;
+        setLoading(false);
+        return; 
       }
 
       const transactionsSnapshot = await getDocs(q);
       const transactions = transactionsSnapshot.docs.map(doc => doc.data());
 
-      
+     
+      if (transactions.length === 0) {
+        setLoading(false);
+        return; 
+      }
+
       const balanceData = { assets: 0, liabilities: 0, equity: 0 };
 
       transactions.forEach(transaction => {
@@ -66,6 +82,7 @@ const BalanceSheet = () => {
     } catch (error) {
       console.error('Error fetching balance sheet data:', error);
     }
+
     setLoading(false);
   };
 
@@ -84,6 +101,17 @@ const BalanceSheet = () => {
     });
 
     doc.save('Balance_Sheet.pdf');
+  };
+
+  
+  const handlePrint = () => {
+    const printContent = document.getElementById('balance-sheet-printable');
+    const printWindow = window.open('', '', 'width=800,height=600');
+    printWindow.document.write('<html><head><title>Balance Sheet</title></head><body>');
+    printWindow.document.write(printContent.innerHTML);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
   };
 
   // Fetch emails from 'userRequests' collection
@@ -129,7 +157,7 @@ const BalanceSheet = () => {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <div className="balance-sheet-view">
+        <div id="balance-sheet-printable" className="balance-sheet-view">
           <h2>Balance Sheet Overview</h2>
           <table className="balance-sheet-table">
             <thead>
@@ -141,15 +169,15 @@ const BalanceSheet = () => {
             <tbody>
               <tr>
                 <td>Assets</td>
-                <td>{balanceSheetData.assets ? balanceSheetData.assets.toFixed(2) : '0.00'}</td>
+                <td>{balanceSheetData.assets.toFixed(2)}</td>
               </tr>
               <tr>
                 <td>Liabilities</td>
-                <td>{balanceSheetData.liabilities ? balanceSheetData.liabilities.toFixed(2) : '0.00'}</td>
+                <td>{balanceSheetData.liabilities.toFixed(2)}</td>
               </tr>
               <tr>
                 <td>Equity</td>
-                <td>{balanceSheetData.equity ? balanceSheetData.equity.toFixed(2) : '0.00'}</td>
+                <td>{balanceSheetData.equity.toFixed(2)}</td>
               </tr>
             </tbody>
           </table>
@@ -158,6 +186,7 @@ const BalanceSheet = () => {
 
       <div className="actions">
         <button onClick={handleSaveAsPDF}>Save as PDF</button>
+        <button onClick={handlePrint}>Print</button>
       </div>
 
       {/* Email Selector Form */}
@@ -203,3 +232,4 @@ const BalanceSheet = () => {
 };
 
 export default BalanceSheet;
+
