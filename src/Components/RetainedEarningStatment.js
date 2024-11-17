@@ -1,17 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import './TrialBalance.css';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
 
-import EmailSelector from './EmailSelector'; // Import EmailSelector component
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 
 const EarningsStatement = () => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [earningsData, setEarningsData] = useState(null);
 
-    
     const generateEarningsStatement = () => {
         if (!startDate) {
             alert('Please select a start date.');
@@ -33,7 +36,6 @@ const EarningsStatement = () => {
         });
     };
 
-    
     const exportToPDF = () => {
         if (!earningsData) {
             alert('Generate an Earnings Statement first.');
@@ -109,6 +111,7 @@ const EarningsStatement = () => {
     );
 };
 
+// EmailSelector Component
 const EmailSelector = () => {
   const [emails, setEmails] = useState([]);
   const [selectedEmail, setSelectedEmail] = useState('');
@@ -173,13 +176,21 @@ const EmailSelector = () => {
   );
 };
 
-ReactDOM.render(
-    <React.StrictMode>
-        <EarningsStatement />
-        <hr />
-        <EmailSelector />
-    </React.StrictMode>,
-    document.getElementById('root')
-);
 
+const App = () => {
+    return (
+        <div className="app-container">
+            <EarningsStatement />
+            <hr />
+            <EmailSelector />
+        </div>
+    );
+};
+
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById('root')
+);
 
