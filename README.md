@@ -50,6 +50,8 @@ Database: Firebase Firestore
 ## Installation and Setup
 Prerequisites
 
+    Git
+
     Node.js 
     
     Firebase CLI
