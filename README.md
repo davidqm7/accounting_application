@@ -57,3 +57,18 @@ Prerequisites
     A Firebase project with Firestore, Authentication, and Cloud Functions enabled
 
 
+To clone on local machine
+
+  1. Clone the repository
+       git clone https://github.com/davidqm7/accounting_application.git
+     Navigate into the project directory:
+       cd accouting_application
+
+   2. Install dependencies
+       npm install
+
+    3.Run the application
+      npm start
+
+
+
