@@ -64,11 +64,11 @@ To clone on local machine
      Navigate into the project directory:
        cd accouting_application
 
-   2. Install dependencies
+  2. Install dependencies
        npm install
 
-    3.Run the application
-      npm start
+  3. Run the application
+       npm start
 
 
 
