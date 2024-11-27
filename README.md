@@ -71,9 +71,15 @@ To clone on local machine
   2. Install dependencies
      
          npm install
-
-  3. Run the application
+    
+ 3. Start backend
      
+         cd node-server
+         node server.js
+    
+  5. Run the application
+
+         cd ..
          npm start
 
 
