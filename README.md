@@ -68,7 +68,7 @@ To clone on local machine
      
          cd accouting_application
 
-  2. Install dependencies
+  2. Install dependencies(have node.js already installed)
      
          npm install
     
