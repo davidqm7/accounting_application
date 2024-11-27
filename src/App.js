@@ -27,6 +27,7 @@ import TrialBalance from './Components/TrialBalance';
 import IncomeStatement from './Components/IncomeStatement';
 import BalanceSheet from './Components/BalanceSheet';
 import EarningsStatement from './Components/EarningStatement';
+import LandingPage from './Components/LandingPage';
 
 const App = () => {
 
@@ -40,6 +41,7 @@ const App = () => {
       <Route path="/forgot-password" element={<ForgotPassword/>}/>
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/register" element={<RegisterPage />} />   
+      <Route path="/landing" element={<LandingPage />} />   
         
       <Route path="/admin" element={<AdminDashboard />} />
       <Route path="/email" element={<SendEmail />} />

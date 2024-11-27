@@ -2,32 +2,33 @@ import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../firebase'; 
-import { collection, query, where, getDocs, addDoc } from "firebase/firestore"; 
+import { collection, query, where, getDocs } from "firebase/firestore"; 
 import { db } from '../firebase'; 
 import './LoginPage.css';
 
 const LoginPage = () => {
-  
+    // State for login form inputs and error message
     const [formData, setFormData] = useState({
       username: '',  
       password: '',
     });
-
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
 
+    // Update form data on user input
     const handleChange = (e) => {
         setFormData({
           ...formData,
           [e.target.name]: e.target.value,
         });
-      };
+    };
 
+    // Handle form submission to log in the user
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            
+            // Query Firestore for the username
             const q = query(collection(db, "userRequests"), where("username", "==", formData.username));
             const querySnapshot = await getDocs(q);
             
@@ -36,35 +37,29 @@ const LoginPage = () => {
                 return;
             }
 
-            
+            // Extract user data from Firestore
             const userDoc = querySnapshot.docs[0];  
             const userData = userDoc.data();
             const email = userData.email;  
 
-            
+            // Authenticate user with email and password
             const userCredential = await signInWithEmailAndPassword(auth, email, formData.password);
-            const user = userCredential.user;
-
             const username = userData.username;
             const userRole = userData.role;
 
-            
-            if (userRole === 'administrator') {
-                navigate('/admin', { state: { username } });
-            } else if (userRole === 'manager') {
-                navigate('/manager', { state: { username } });
-            } else {
-                navigate('/user-dashboard', { state: { username } });
-            }
+            // Redirect to Landing Page with username and role
+            navigate('/landing', { state: { username, userRole } });
         } catch (err) {
             setErrorMessage('Invalid username or password. Please try again.');
         }
     };
 
+    // Navigate to the Register Page
     const goToRegister = () => {
         navigate('/register');
     };
 
+    // Navigate to the Forgot Password Page
     const handleForgotPassword = () => {
         navigate('/forgot-password');
     };
@@ -93,16 +88,16 @@ const LoginPage = () => {
                         required
                     />
                 </div>
+                {/* Display error message if login fails */}
                 {errorMessage && <p className="error-message">{errorMessage}</p>}
-                <button type="submit" title = "Logs the user if the information is correct" >Login</button>
+                <button type="submit">Login</button>
             </form>
 
             <div className="additional-links">
-                <button title = "Takes you to forgot password page" onClick={handleForgotPassword}>Forgot Password?</button>
+                {/* Forgot Password and Register buttons */}
+                <button onClick={handleForgotPassword}>Forgot Password?</button>
                 <p>Don't have an account?</p>
-                <button 
-                title = "Takes you to the register page"
-                onClick={goToRegister}>Register</button>
+                <button onClick={goToRegister}>Register</button>
             </div>
         </div>
     );
