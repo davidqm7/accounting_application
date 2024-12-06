@@ -41,7 +41,7 @@ const IncomeStatement = () => {
     }, []);
 
    
-
+//fetch income data from transaction collection firebase
     const fetchIncomeData = async () => {
       setLoading(true);
       try {
@@ -61,7 +61,7 @@ const IncomeStatement = () => {
         const transactionsSnapshot = await getDocs(q);
         const transactions = transactionsSnapshot.docs.map(doc => doc.data());
   
-        // Calculate Income
+        // Calculate Income based on balance - credits
         const balanceData = {};
         transactions.forEach(transaction => {
           transaction.transactionArray.forEach(item => {
@@ -77,7 +77,7 @@ const IncomeStatement = () => {
             }
           });
         });
-  
+  // Set the income data from previous calculation
         setIncomeData(Object.entries(balanceData).map(([account, { balance, credit, balanceTotal }]) => ({
           account,
           balance: balance.toFixed(4),
@@ -89,7 +89,7 @@ const IncomeStatement = () => {
       }
       setLoading(false);
     };
-  
+  // Ability to save income statement as PDF
     const handleSaveAsPDF = () => {
       const doc = new jsPDF();
       doc.text("Income Statement is", 90, 15);
@@ -99,7 +99,7 @@ const IncomeStatement = () => {
       });
       doc.save('Income.pdf');
     };
-  
+  // Ability to print the income statement
     const handlePrint = useReactToPrint({
       content: () => reportRef.current,
       documentTitle: 'Income_Statement',
