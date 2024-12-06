@@ -10,6 +10,7 @@ const Activation = () => {
   const auth = getAuth(); // Get the authentication instance
 
   useEffect(() => {
+    // Fetch all user requests from Firestore when the component mounts
     const fetchUsers = async () => {
       try {
         const usersSnapshot = await getDocs(collection(db, 'userRequests'));
@@ -22,6 +23,7 @@ const Activation = () => {
     fetchUsers();
   }, []);
 
+  // Generate a unique username based on the user's first name, last name, and account creation date
   const generateUsername = (firstName, lastName, createdAt) => {
     const firstInitial = firstName.charAt(0).toLowerCase();
     const lastNameLower = lastName.toLowerCase();
@@ -32,6 +34,7 @@ const Activation = () => {
     return `${firstInitial}${lastNameLower}${month}${year}`;
   };
 
+   // Send an activation email using the backend email endpoint
   const sendActivationEmail = async (email, firstName, username) => {
     try {
       const response = await fetch('http://localhost:5000/send-activation-email', {
@@ -50,6 +53,7 @@ const Activation = () => {
     }
   };
 
+  // Check the user's account balance in the userAccounts collection
   const checkUserBalance = async (userId) => {
     try {
       // Check user balance in userAccounts collection
@@ -64,6 +68,7 @@ const Activation = () => {
     return 0;
   };
 
+  // Log any changes to the user's status in the event log collection
   const logStatusChange = async (username, newStatus) => {
     try {
       const currentUser = auth.currentUser; 
@@ -82,6 +87,7 @@ const Activation = () => {
     }
   };
 
+   // Toggle a user's status between Active and Inactive
   const toggleStatus = async (user) => {
     const newStatus = user.status === 'Active' ? 'Inactive' : 'Active';
     setErrorMessage('');

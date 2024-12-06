@@ -9,14 +9,15 @@ const JournalEntry = () => {
   const navigate = useNavigate();
   const [journalEntry, setJournalEntry] = useState(null);
 
-  
+  // Effect to fetch the journal entry when the component mounts or when the location changes
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const entryId = queryParams.get('id');
 
-    if (entryId) {
+    if (entryId) {   // Check if the entry ID exists in the query parameters
       const fetchJournalEntry = async () => {
         try {
+          // Reference the specific document in the 'journalEntries' Firestore collection
           const docRef = doc(db, 'journalEntries', entryId);
           const docSnap = await getDoc(docRef);
 
@@ -30,7 +31,7 @@ const JournalEntry = () => {
         }
       };
 
-      fetchJournalEntry();
+      fetchJournalEntry();      // Call the function to fetch the journal entry
     }
   }, [location]);
 

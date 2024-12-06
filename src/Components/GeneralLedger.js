@@ -15,10 +15,11 @@ const GeneralLedger = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
-  
+  // Fetch all user accounts when the component mounts
   useEffect(() => {
     const fetchUserAccounts = async () => {
       try {
+        // Fetch accounts from Firestore's 'userAccounts' collection
         const accountsSnapshot = await getDocs(collection(db, 'userAccounts'));
         const accountsList = accountsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setUserAccounts(accountsList);
@@ -29,7 +30,7 @@ const GeneralLedger = () => {
     fetchUserAccounts();
   }, []);
 
-  
+  // Fetch details of a selected account by its ID or UID
   const fetchAccountDetails = async (accountId, isUid = false) => {
     try {
       const accountDocRef = isUid 
@@ -52,7 +53,7 @@ const GeneralLedger = () => {
     }
   };
 
-  
+  // Fetch transactions that match the selected account
   const fetchFilteredTransactions = async (accountName) => {
     try {
       const entriesSnapshot = await getDocs(collection(db, 'journalEntries'));
@@ -89,7 +90,7 @@ const GeneralLedger = () => {
     }
   };
 
-  
+  // Fetch account details when the URL changes (query params update)
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const accountId = queryParams.get('id') || queryParams.get('uid');
@@ -101,7 +102,7 @@ const GeneralLedger = () => {
     }
   }, [location]);
 
-  
+   // Handle selection of a different account from the dropdown
   const handleAccountSelect = async (e) => {
     const accountId = e.target.value;
     setSelectedAccountId(accountId);
@@ -109,10 +110,10 @@ const GeneralLedger = () => {
   };
 
   
-  const handleStartDateChange = (e) => setStartDate(new Date(e.target.value));
-  const handleEndDateChange = (e) => setEndDate(new Date(e.target.value));
+  const handleStartDateChange = (e) => setStartDate(new Date(e.target.value));  // Handle start date change
+  const handleEndDateChange = (e) => setEndDate(new Date(e.target.value)); // Handle end date change
 
- 
+  // Calculate running balance for filtered transactions
   const calculateBalance = (transactions) => {
     let currentBalance = parseFloat(startingBalance);
     return transactions

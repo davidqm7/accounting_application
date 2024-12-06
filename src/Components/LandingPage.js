@@ -7,9 +7,11 @@ import './LandingPage.css';
 const LandingPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-
+  
+// Extract username and user role from the location state
   const { username, userRole } = location.state || {};
 
+   // State to store important messages and calculated financial ratios
   const [importantMessages, setImportantMessages] = useState([]);
   const [ratios, setRatios] = useState({
     currentRatio: null,
@@ -17,6 +19,7 @@ const LandingPage = () => {
     debtToEquityRatio: null,
   });
 
+  // Fetch important messages from the 'importantMessages' Firestore collection
   const fetchImportantMessages = async () => {
     try {
       const messagesCollection = collection(db, 'importantMessages');
@@ -31,6 +34,7 @@ const LandingPage = () => {
     }
   };
 
+   // Fetch journal entries and calculate financial ratios
   const fetchAndCalculateRatios = async () => {
     try {
       const journalEntriesCollection = collection(db, 'journalEntries');
@@ -67,6 +71,7 @@ const LandingPage = () => {
     }
   };
 
+   // Navigate to role-specific dashboard based on userRole
   const goToDashboard = () => {
     if (userRole === 'administrator') {
       navigate('/admin', { state: { username } });
@@ -77,12 +82,14 @@ const LandingPage = () => {
     }
   };
 
+  // Determine color for financial ratio display based on range
   const getRatioColor = (ratio, range) => {
     if (ratio < range.low) return 'red';
     if (ratio > range.high) return 'green';
     return 'yellow';
   };
 
+// Fetch messages and calculate ratios when the component is mounted
   useEffect(() => {
     fetchImportantMessages();
     fetchAndCalculateRatios();

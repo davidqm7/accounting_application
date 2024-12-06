@@ -5,28 +5,33 @@ import { db } from '../firebase';
 import './UserReport.css'; 
 
 const UserReport = () => {
+    // State to store the list of users and the search query for filtering
     const [users, setUsers] = useState([]);
     const [searchQuery, setSearchQuery] = useState(''); 
     const navigate = useNavigate();
 
+    // Fetch users and merge data from userRequests and userAccounts collections
     useEffect(() => {
         const fetchUsers = async () => {
             try {
+                 // Get references to the collections in Firestore
                 const userRequestsCollection = collection(db, 'userRequests'); 
                 const userAccountsCollection = collection(db, 'userAccounts'); 
 
+                // Fetch the documents from both collections
                 const userRequestsSnapshot = await getDocs(userRequestsCollection); 
                 const userAccountsSnapshot = await getDocs(userAccountsCollection);
 
                 const usersList = userRequestsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 const accountsList = userAccountsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-               
+               // Merge the user data with their account details
                 const mergedUsers = usersList.map(user => ({
                     ...user,
                     accountDetails: accountsList.find(account => account.uid === user.uid)
                 }));
 
+                // Update state with the merged user data
                 setUsers(mergedUsers);
             } catch (error) {
                 console.error("Error fetching users:", error); 
@@ -35,6 +40,7 @@ const UserReport = () => {
         fetchUsers();
     }, []);
 
+    // Function to toggle the user's status (active/inactive)
     const toggleUserStatus = async (id, currentStatus) => {
         try {
             const userRef = doc(db, 'userRequests', id);
@@ -48,11 +54,12 @@ const UserReport = () => {
     };
 
  
-    
+     // Function to navigate to the edit page for a specific user
     const goToEdit = (uid) => {
         navigate(`/edits/${uid}`);
     };
     
+     // Filter users based on the search query (account number or account name)
     const filteredUsers = users.filter(user => {
         const accountNumber = user?.accountDetails?.accountNumber || ''; 
         const accountName = `${user.firstName} ${user.lastName}`.toLowerCase();

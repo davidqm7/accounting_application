@@ -33,9 +33,11 @@ const App = () => {
 
   return (
     <div>
+      {/* Navbar is rendered at the top of every page */}
       <NavBar></NavBar>
       <Routes>
         
+      {/* Routes for all the different pages in the application */}
 
       <Route path="/" element={<LoginPage />} /> 
       <Route path="/forgot-password" element={<ForgotPassword/>}/>
@@ -43,6 +45,7 @@ const App = () => {
       <Route path="/register" element={<RegisterPage />} />   
       <Route path="/landing" element={<LandingPage />} />   
         
+        {/* Admin-related routes */}
       <Route path="/admin" element={<AdminDashboard />} />
       <Route path="/email" element={<SendEmail />} />
       <Route path="/create-user" element={<CreateUser />} />
@@ -52,6 +55,7 @@ const App = () => {
       <Route path="/details/:uid" element={<Details />} />
       <Route path="/edits/:uid" element={<Edits />} />
 
+     {/* Manager-related routes */}
       <Route path="/manager" element={<ManagerDashboard />} />
       <Route path="/manager-get-email" element={<ManagerGetEmail />} />
       <Route path="/manager-user-report" element={<ManagerUserReport />} />
@@ -62,7 +66,7 @@ const App = () => {
       <Route path="/retained-earnings-statement" element={<EarningsStatement />} />
 
 
-
+    {/* Regular user-related routes */}
       <Route path="/user-dashboard" element={<RegularDashboard />} />
       <Route path="/reg-get-email" element={<RegularGetEmail />} />
       <Route path="/regular-user-report" element={<RegularUserReport />} />

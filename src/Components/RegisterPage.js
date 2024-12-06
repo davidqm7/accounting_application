@@ -7,6 +7,7 @@ import { auth } from '../firebase';
 import './RegisterPage.css';
 
 const RegisterPage = () => {
+  // State for storing form data input by the user
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -18,10 +19,12 @@ const RegisterPage = () => {
     userName: '',
   });
 
+  // State to show success/error messages to the user
   const [message, setMessage] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const navigate = useNavigate();
 
+   // Handles input field changes and updates formData state dynamically
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -29,7 +32,7 @@ const RegisterPage = () => {
     });
   };
 
- 
+ // Validates the password based on specific rules
   const validatePassword = (password) => {
     const minLength = 8;
     const startsWithLetter = /^[A-Za-z]/.test(password); // Check if the password starts with a letter
@@ -37,6 +40,7 @@ const RegisterPage = () => {
     const hasNumber = /[0-9]/.test(password); // Check for at least one number
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password); // Check for at least one special character
 
+    // Check each validation condition and return appropriate error message
     if (password.length < minLength) {
       return "Password must be at least 8 characters long.";
     }
@@ -56,9 +60,11 @@ const RegisterPage = () => {
     return ''; 
   };
 
+   // Handles form submission and user registration
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Validate password before proceeding
     const passwordValidationError = validatePassword(formData.password);
     if (passwordValidationError) {
       setPasswordError(passwordValidationError);
@@ -66,11 +72,12 @@ const RegisterPage = () => {
     }
 
     try {
+      // Create a new user in Firebase Authentication
       const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
       const user = userCredential.user;
 
 
-
+      // Save the user's request in the "userRequests" Firestore collection
       await addDoc(collection(db, "userRequests"), {
         uid: user.uid,
         firstName: formData.firstName,

@@ -8,10 +8,12 @@ import './RegularDashboard.css';
 const RegularDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const username = location.state?.username || 'User';  
+  const username = location.state?.username || 'User';  // Get the username from the navigation state or default to 'User'
 
+  // State to store user's first and last name
   const [userInfo, setUserInfo] = useState({ firstName: '', lastName: '' });
 
+  // useEffect to fetch user information when the component mounts
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -20,6 +22,7 @@ const RegularDashboard = () => {
         const userSnapshot = await getDocs(q);
 
         if (!userSnapshot.empty) {
+          // If a document is found, extract user data and set state
           const userData = userSnapshot.docs[0].data();
           setUserInfo({ firstName: userData.firstName, lastName: userData.lastName });
         }
@@ -31,6 +34,7 @@ const RegularDashboard = () => {
     fetchUserInfo();
   }, [username]);
 
+   // Function to handle user logout
   const handleLogout = async () => {
     try {
       await signOut(auth);

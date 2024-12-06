@@ -5,12 +5,16 @@ import { db } from '../firebase';
 import './ManagerUserReport.css';
 
 const ManagerUserReport = () => {
+    // State to hold the list of users fetched from Firestore
   const [users, setUsers] = useState([]);
+  // Hook to programmatically navigate to different routes
   const navigate = useNavigate();
 
+  // useEffect hook to fetch data from Firestore when the component is mounted
   useEffect(() => {
       const fetchUsers = async () => {
           try {
+             // Reference to the 'userRequests' collection in Firestore
               const usersCollection = collection(db, 'userRequests'); 
               const usersSnapshot = await getDocs(usersCollection); 
               const usersList = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -20,12 +24,15 @@ const ManagerUserReport = () => {
               console.error("Error fetching users:", error); 
           }
       };
+      // Call the fetchUsers function
       fetchUsers();
   }, []);
 
+  // Function to handle navigation to the General Ledger page for a specific user
   const handleCardClick = (user) => {
       console.log("Navigating to General Ledger with user UID:", user.uid); // Debug log
       if (user.uid) {
+          // Navigate to the General Ledger page, passing the user's UID as a query parameter
           navigate(`/general-ledger?uid=${user.uid}`);
       } else {
           console.error("User UID is missing for navigation.");
