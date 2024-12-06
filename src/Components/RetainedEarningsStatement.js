@@ -19,12 +19,12 @@ const RetainedEarningsStatement = () => {
       alert('Please select a start date.');
       return;
     }
-
+//Initialized values and calculated the retained earnings
     const initialEarnings = 50000; 
     const netIncome = 15000; 
     const dividends = 4000; 
     const retainedEarnings = initialEarnings + netIncome - dividends;
-
+//Set the Earnings data that will be used
     setEarningsData({
       startDate,
       endDate: endDate || 'Present',

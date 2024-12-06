@@ -14,7 +14,8 @@ const AdminDashboard = () => {
   const [recentActivity, setRecentActivity] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [userInfo, setUserInfo] = useState({ firstName: '', lastName: '' });
-
+   
+  // Fetch the total number of registered users from the database
   useEffect(() => {
     const fetchTotalUsers = async () => {
       try {
@@ -24,7 +25,7 @@ const AdminDashboard = () => {
         console.error("Error fetching total users:", error);
       }
     };
-
+    // Fetch recent user activities from the database
     const fetchRecentActivity = async () => {
       try {
         const activitySnapshot = await getDocs(collection(db, 'userActivity')); 
@@ -34,7 +35,7 @@ const AdminDashboard = () => {
         console.error("Error fetching recent activity:", error);
       }
     };
-
+    // Fetch system notifications from the database
     const fetchNotifications = async () => {
       try {
         const notificationsSnapshot = await getDocs(collection(db, 'notifications')); 
@@ -44,7 +45,7 @@ const AdminDashboard = () => {
         console.error("Error fetching notifications:", error);
       }
     };
-
+    // Fetch the logged-in user's personal information from the database
     const fetchUserInfo = async () => {
       try {
         const user = auth.currentUser;
@@ -69,7 +70,7 @@ const AdminDashboard = () => {
     fetchNotifications();
     fetchUserInfo();
   }, []);
-
+  // Log out the current user and redirect to the login page
   const handleLogout = async () => {
     try {
       await signOut(auth); 

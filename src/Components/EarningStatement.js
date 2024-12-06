@@ -7,11 +7,14 @@ import 'jspdf-autotable';
 import { useReactToPrint } from 'react-to-print';
 import './TrialBalance.css';
 
+// React functional component for generating and managing an earnings statement
 const EarningsStatement = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [earningsData, setEarningsData] = useState(null);
   const reportRef = useRef(); 
+
+    // Function to generate the earnings statement based on input and calculations
   const generateEarningsStatement = () => {
     if (!startDate) {
       alert('Please select a start date.');
@@ -32,7 +35,7 @@ const EarningsStatement = () => {
       retainedEarnings,
     });
   };
-
+  // Function to export the earnings statement to a PDF file
   const exportToPDF = () => {
     if (!earningsData) {
       alert('Generate an Earnings Statement first.');
@@ -52,7 +55,7 @@ const EarningsStatement = () => {
     });
     doc.save('RetainedEarningsStatement.pdf');
   };
-
+  // Function to handle printing the earnings statement using a React print hook
   const handlePrint = useReactToPrint({
     content: () => reportRef.current,
     documentTitle: 'Earnings Statement',

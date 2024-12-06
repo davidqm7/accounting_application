@@ -12,30 +12,32 @@ const ForgotPassword = () => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
+  // Update email state when the email input field changes
   const handleChangeEmail = (e) => setEmail(e.target.value);
+  // Update username state when the username input field changes
   const handleChangeUsername = (e) => setUsername(e.target.value);
+  // Update date of birth state when the DOB input field changes
   const handleChangeDob = (e) => setDob(e.target.value);
-
+  // Handle form submission to verify user details and send a password reset email
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage(''); 
     setError('');
 
     try {
-      
+      // Query the Firestore database to find the user by username  
       const userQuery = query(collection(db, 'userRequests'), where('username', '==', username));
 
       const querySnapshot = await getDocs(userQuery);
       
       if (!querySnapshot.empty) {
-        
+     // Extract user data if the username exists in the database
         const userDoc = querySnapshot.docs[0];
         const userData = userDoc.data();
 
         console.log('User Data:', userData);
         
-      
+     // Validate email and date of birth with the database records  
         if (userData.email === email && userData.dob === dob) {
           await sendPasswordResetEmail(auth, email);
           setMessage('Password reset email sent! Please check your inbox.');
@@ -49,7 +51,7 @@ const ForgotPassword = () => {
       setError('Error: ' + err.message);
     }
   };
-
+  // Navigate back to the login page
   const handleBackToLogin = () => {
     navigate('/');  
   };

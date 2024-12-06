@@ -10,10 +10,12 @@ const AdminJournalizing = () => {
     const navigate = useNavigate();
     const [eventLogs, setEventLogs] = useState([]);
 
+     // Fetch and set event logs from the database on component mount
     useEffect(() => {
         fetchEventLogs();
     }, []);
 
+    // Fetch event logs from the "eventLogs" collection in Firestore
     const fetchEventLogs = async () => {
         try {
             const logsSnapshot = await getDocs(collection(db, "eventLogs"));
@@ -24,6 +26,7 @@ const AdminJournalizing = () => {
         }
     };
 
+    // Send an email to the manager notifying about recent journal changes
     const sendEmail = async () => {
         const functions = getFunctions();
         const sendEmailToManager = httpsCallable(functions, 'sendEmailToManager');
